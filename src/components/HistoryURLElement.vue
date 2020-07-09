@@ -2,11 +2,11 @@
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
       <span
-        v-on="on"
         class="history-url-element"
         :class="{
           'history-url-element--different': different
         }"
+        v-on="on"
       >
         <slot />
       </span>
@@ -16,14 +16,14 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+  import { Vue, Component, Prop } from 'vue-property-decorator';
 
-@Component
-export default class HistoryURLElement extends Vue {
-  @Prop({ default: false, type: Boolean }) readonly different!: boolean
+  @Component
+  export default class HistoryURLElement extends Vue {
+    @Prop({ default: false, type: Boolean }) readonly different!: boolean
 
-  @Prop({ required: true, type: String }) readonly label!: string
-}
+    @Prop({ required: true, type: String }) readonly label!: string
+  }
 </script>
 
 <style lang="scss">

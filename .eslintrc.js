@@ -3,9 +3,11 @@ module.exports = {
   env: {
     node: true,
   },
+  plugins: [
+    'vuetify',
+  ],
   extends: [
-    'plugin:vue/essential',
-    '@vue/airbnb',
+    'vuetify',
     '@vue/typescript/recommended',
   ],
   parserOptions: {
@@ -16,13 +18,16 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-unused-expressions': 'off',
     '@typescript-eslint/no-unused-expressions': 'error',
+    'vuetify/grid-unknown-attributes': 'error',
+    'vuetify/no-legacy-grid': 'error',
+    semi: ['error', 'always'],
   },
   overrides: [
     {
       files: '*.vue',
       rules: {
-        'class-methods-use-this': 'off'
-      }
-    }
-  ]
+        'class-methods-use-this': 'off',
+      },
+    },
+  ],
 };

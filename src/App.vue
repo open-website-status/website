@@ -1,7 +1,14 @@
 <template>
   <v-app>
-    <v-app-bar app class="app-bar">
-      <v-btn icon to="/" v-if="$route.name !== 'Home'">
+    <v-app-bar
+      app
+      class="app-bar"
+    >
+      <v-btn
+        v-if="$route.name !== 'Home'"
+        icon
+        to="/"
+      >
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
       <v-toolbar-title>Open Website Status</v-toolbar-title>
@@ -9,10 +16,10 @@
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
           <v-avatar
-            class="avatar"
             v-ripple
-            v-on="on"
+            class="avatar"
             :size="$vuetify.breakpoint.smAndDown ? 32 : undefined"
+            v-on="on"
           >
             <img
               src="https://cdn.vuetifyjs.com/images/john.jpg"
@@ -34,17 +41,17 @@
         </v-list>
       </v-menu>
     </v-app-bar>
-    <router-view/>
+    <router-view />
   </v-app>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Vue } from 'vue-property-decorator';
 
-@Component
-export default class App extends Vue {
+  @Component
+  export default class App extends Vue {
 
-}
+  }
 </script>
 
 <style lang="scss">

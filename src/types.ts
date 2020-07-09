@@ -35,9 +35,9 @@ export interface CanceledJob {
 }
 
 export interface JobResultSuccess {
-  state: 'success',
-  httpCode: number,
-  executionTime: number,
+  state: 'success';
+  httpCode: number;
+  executionTime: number;
 }
 
 export interface JobResultTimeout {
