@@ -1,32 +1,56 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+  <v-app>
+    <v-app-bar app class="app-bar">
+      <v-btn icon to="/" v-if="$route.name !== 'Home'">
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
+      <v-toolbar-title>Open Website Status</v-toolbar-title>
+      <v-spacer />
+      <v-menu offset-y>
+        <template v-slot:activator="{ on }">
+          <v-avatar
+            class="avatar"
+            v-ripple
+            v-on="on"
+            :size="$vuetify.breakpoint.smAndDown ? 32 : undefined"
+          >
+            <img
+              src="https://cdn.vuetifyjs.com/images/john.jpg"
+              alt="John"
+            >
+          </v-avatar>
+        </template>
+        <v-list>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>
+                mdi-logout
+              </v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>
+              Sign out
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-app-bar>
     <router-view/>
-  </div>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+
+@Component
+export default class App extends Vue {
+
 }
+</script>
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+<style lang="scss">
+  .app-bar {
+    .avatar {
+      cursor: pointer;
     }
   }
-}
 </style>
