@@ -25,27 +25,27 @@
       class="history-container"
     >
       <div class="history-url justify-center py-6 py-md-12">
-        <HistoryURLElement label="Protocol">
+        <interactive-url-element label="Protocol">
           {{ url.protocol }}//
-        </HistoryURLElement>
-        <HistoryURLElement label="Hostname">
+        </interactive-url-element>
+        <interactive-url-element label="Hostname">
           {{ url.hostname }}
-        </HistoryURLElement>
-        <HistoryURLElement
+        </interactive-url-element>
+        <interactive-url-element
           v-if="url.port !== undefined"
           label="Port"
         >
           :{{ url.port }}
-        </HistoryURLElement>
-        <HistoryURLElement label="Pathname">
+        </interactive-url-element>
+        <interactive-url-element label="Pathname">
           {{ url.pathname }}
-        </HistoryURLElement>
-        <HistoryURLElement
+        </interactive-url-element>
+        <interactive-url-element
           v-if="url.search !== ''"
           label="Search"
         >
           {{ url.search }}
-        </HistoryURLElement>
+        </interactive-url-element>
       </div>
       <v-expansion-panels
         hover
@@ -61,49 +61,52 @@
                 <div v-text="query.dateString" />
               </div>
               <div class="history-url mt-2">
-                <HistoryURLElement
+                <interactive-url-element
                   label="Protocol"
                   :different="url.protocol !== query.protocol"
                 >
                   {{ query.protocol }}//
-                </HistoryURLElement>
-                <HistoryURLElement label="Hostname">
+                </interactive-url-element>
+                <interactive-url-element
+                  label="Hostname"
+                  :different="url.hostname !== query.hostname"
+                >
                   {{ query.hostname }}
-                </HistoryURLElement>
-                <HistoryURLElement
+                </interactive-url-element>
+                <interactive-url-element
                   v-if="query.port !== undefined"
                   label="Port"
                   :different="url.port !== query.port"
                 >
                   :{{ query.port }}
-                </HistoryURLElement>
-                <HistoryURLElement
+                </interactive-url-element>
+                <interactive-url-element
                   v-else-if="url.port !== undefined"
                   label="Default port"
                   different
                 >
                   &empty;
-                </HistoryURLElement>
-                <HistoryURLElement
+                </interactive-url-element>
+                <interactive-url-element
                   label="Pathname"
                   :different="url.pathname !== query.pathname"
                 >
                   {{ query.pathname }}
-                </HistoryURLElement>
-                <HistoryURLElement
+                </interactive-url-element>
+                <interactive-url-element
                   v-if="query.search !== ''"
                   label="Search"
                   :different="url.search !== query.search"
                 >
                   {{ query.search }}
-                </HistoryURLElement>
-                <HistoryURLElement
+                </interactive-url-element>
+                <interactive-url-element
                   v-else-if="url.search !== ''"
                   label="No search"
                   different
                 >
                   &empty;
-                </HistoryURLElement>
+                </interactive-url-element>
               </div>
             </div>
           </v-expansion-panel-header>
@@ -121,205 +124,33 @@
                   :sm="6"
                   :md="4"
                 >
-                  <v-card outlined>
-                    <v-card-title>
-                      Job status
-                      <v-spacer />
-                      <v-menu offset-y>
-                        <template v-slot:activator="{ on }">
-                          <v-btn
-                            icon
-                            class="info-button"
-                            v-on="on"
-                          >
-                            <v-icon>
-                              mdi-information
-                            </v-icon>
-                          </v-btn>
-                        </template>
-                        <v-list
-                          dense
-                          color="grey darken-3"
-                        >
-                          <v-list-item
-                            v-for="(item, i) in query.jobStatues"
-                            :key="i"
-                          >
-                            <v-sheet
-                              :color="item.color"
-                              height="24"
-                              rounded
-                              class="mr-3 px-2"
-                            >
-                              {{ item.data }}
-                            </v-sheet>
-                            <v-list-item-content>
-                              <v-list-item-title>
-                                {{ item.label }}
-                              </v-list-item-title>
-                              <v-list-item-subtitle v-if="item.description">
-                                {{ item.description }}
-                              </v-list-item-subtitle>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list>
-                      </v-menu>
-                    </v-card-title>
-                    <v-divider />
-                    <div
-                      v-if="query.jobCount === 0"
-                      class="text-center text-subtitle-1 my-6 mx-4 text--secondary"
-                    >
-                      No jobs
-                    </div>
-                    <div
-                      v-else
-                      class="pa-4 pa-md-2 mx-auto history-status-chart-wrapper"
-                    >
-                      <pie-chart
-                        :data="query.jobStatues"
-                      />
-                    </div>
-                  </v-card>
+                  <job-state-card
+                    :job-states="query.jobStates"
+                    class="fill-height"
+                  />
                 </v-col>
                 <v-col
                   :cols="12"
                   :sm="6"
                   :md="4"
                 >
-                  <v-card outlined>
-                    <v-card-title>
-                      Results
-                    </v-card-title>
-                    <v-divider />
-                    <div
-                      v-if="query.completedJobCount === 0"
-                      class="text-center text-subtitle-1 my-6 mx-4 text--secondary"
-                    >
-                      No completed jobs
-                    </div>
-                    <template v-if="query.timeoutCount > 0 || query.errorCounts.length > 0">
-                      <v-subheader>Errors</v-subheader>
-                      <v-list
-                        subheader
-                        dense
-                      >
-                        <v-list-item>
-                          <v-sheet
-                            color="amber darken-1"
-                            height="24"
-                            rounded
-                            class="mr-3 px-2"
-                          >
-                            {{ query.timeoutCount }}
-                          </v-sheet>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              Timeout
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                        <v-list-item
-                          v-for="error in query.errorCounts"
-                          :key="error.code"
-                        >
-                          <v-sheet
-                            color="red"
-                            height="24"
-                            rounded
-                            class="mr-3 px-2"
-                          >
-                            {{ error.count }}
-                          </v-sheet>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              {{ error.code }}
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list>
-                    </template>
-                    <v-divider
-                      v-if="(query.timeoutCount > 0 || query.errorCounts.length > 0)
-                        && query.httpCodeCounts.length > 0"
-                    />
-                    <template v-if="query.httpCodeCounts.length > 0">
-                      <v-subheader>Responses</v-subheader>
-                      <v-list
-                        subheader
-                        dense
-                      >
-                        <v-list-item
-                          v-for="code in query.httpCodeCounts"
-                          :key="code.code"
-                        >
-                          <v-sheet
-                            :color="code.color"
-                            height="24"
-                            rounded
-                            class="mr-3 px-2"
-                          >
-                            {{ code.count }}
-                          </v-sheet>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              {{ code.code }}
-                            </v-list-item-title>
-                            <v-list-item-subtitle>
-                              {{ code.text }}
-                            </v-list-item-subtitle>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list>
-                    </template>
-                  </v-card>
+                  <job-results-card
+                    :timeout-count="query.timeoutCount"
+                    :error-counts="query.errorCounts"
+                    :http-code-counts="query.httpCodeCounts"
+                    class="fill-height"
+                  />
                 </v-col>
                 <v-col
                   :cols="12"
                   :sm="12"
                   :md="4"
                 >
-                  <v-card outlined>
-                    <v-card-title>
-                      Execution time
-                    </v-card-title>
-                    <v-divider />
-                    <template v-if="query.timeoutCount > 0">
-                      <v-card-text>
-                        <v-alert
-                          color="amber"
-                          text
-                          border="left"
-                          class="mb-0"
-                        >
-                          {{ query.timeoutCount }}
-                          {{ query.timeoutCount === 1 ? 'timeout' : 'timeouts' }}
-                        </v-alert>
-                      </v-card-text>
-                      <v-divider />
-                    </template>
-                    <v-card-text
-                      v-if="query.averageTime !== null"
-                      class="text--primary"
-                    >
-                      <div class="text-center subtitle-1">
-                        Average time:
-                      </div>
-                      <h4 class="text-center text-h3 font-weight-thin">
-                        {{ query.averageTime }} s
-                      </h4>
-                      <ExecutionTimeChart
-                        :data="query.executionTimes"
-                        class="mt-2"
-                      />
-                    </v-card-text>
-                    <div
-                      v-if="query.averageTime === null"
-                      class="text-center text-subtitle-1 my-6 mx-4 text--secondary"
-                    >
-                      No responses
-                    </div>
-                  </v-card>
+                  <execution-time-card
+                    :timeout-count="query.timeoutCount"
+                    :execution-times="query.executionTimes"
+                    class="fill-height"
+                  />
                 </v-col>
               </v-row>
               <div class="d-flex">
@@ -330,7 +161,8 @@
                   color="primary"
                   :to="`/query-details/${query.id}`"
                 >
-                  View details <v-icon right>
+                  View details
+                  <v-icon right>
                     mdi-arrow-right
                   </v-icon>
                 </v-btn>
@@ -355,22 +187,23 @@
 
 <script lang="ts">
   import { Component, Vue, Watch } from 'vue-property-decorator';
-  import HistoryURLElement from '@/components/HistoryURLElement.vue';
+  import InteractiveUrlElement from '@/components/InteractiveUrlElement.vue';
   import PieChart from '@/components/PieChart.vue';
   import { colors } from 'vuetify/lib';
   import {
-    BaseHistoryJob,
-    CompletedJob,
+    CompletedHistoryJob,
     HistoryQuery,
     JobResultError,
     JobResultSuccess, QueryURL,
   } from '@/types';
   import _ from 'lodash';
-  import HttpStatus from 'http-status-codes';
   import ExecutionTimeChart from '@/components/ExecutionTimeChart.vue';
+  import JobStateCard from '@/components/JobStateCard.vue';
+  import JobResultsCard from '@/components/JobResultsCard.vue';
+  import ExecutionTimeCard from '@/components/ExecutionTimeCard.vue';
 
   @Component({
-    components: { ExecutionTimeChart, PieChart, HistoryURLElement },
+    components: { JobResultsCard, JobStateCard, ExecutionTimeChart, ExecutionTimeCard, PieChart, InteractiveUrlElement },
   })
   export default class History extends Vue {
     url: QueryURL | null = null;
@@ -462,13 +295,29 @@
         timestamp: new Date(),
         jobs: [],
       },
+      {
+        id: '465653255',
+        protocol: 'https:',
+        hostname: 'google.com',
+        port: 300,
+        pathname: '/',
+        search: '',
+        timestamp: new Date(),
+        jobs: [
+          {
+            jobState: 'dispatched',
+            id: 'ojkhsfajohsgfa',
+            queryId: '465653255',
+          },
+        ],
+      },
     ];
 
     get queryItems () {
       return this.queries.map((query) => {
         const jobStateCounts = _.countBy(query.jobs, 'jobState');
         const jobResults = _.groupBy(
-          query.jobs.filter((job) => job.jobState === 'completed') as Array<CompletedJob & BaseHistoryJob>,
+          query.jobs.filter((job) => job.jobState === 'completed') as CompletedHistoryJob[],
           'result.state',
         );
         return ({
@@ -485,8 +334,7 @@
           port: query.port,
           pathname: query.pathname,
           search: query.search,
-          jobCount: query.jobs.length,
-          jobStatues: [
+          jobStates: [
             {
               label: 'Dispatched',
               color: colors.blueGrey.base,
@@ -515,60 +363,25 @@
               label: 'Completed',
               color: colors.blue.base,
               data: jobStateCounts.completed ?? 0,
-              description: 'Result has been received',
+              description: 'Result have been received',
             },
           ],
           completedJobCount: jobStateCounts.completed ?? 0,
           timeoutCount: jobResults.timeout?.length ?? 0,
-          errorCounts: jobResults.error === undefined ? [] : _.orderBy(
-            _.toPairs(_.countBy(
-              jobResults.error as Array<CompletedJob<JobResultError> & BaseHistoryJob>,
+          errorCounts: jobResults.error === undefined ? [] : _.toPairs(
+            _.countBy(
+              jobResults.error as CompletedHistoryJob<JobResultError>[],
               (job) => job.result.errorCode,
-            )),
-            [([code]) => code],
-            ['asc'],
+            ),
           ).map(([code, count]) => ({ code, count })),
-          httpCodeCounts: jobResults.success === undefined ? [] : _.orderBy(
-            _.toPairs(_.countBy(
-              jobResults.success as Array<CompletedJob<JobResultSuccess> & BaseHistoryJob>,
+          httpCodeCounts: jobResults.success === undefined ? [] : _.toPairs(
+            _.countBy(
+              jobResults.success as CompletedHistoryJob<JobResultSuccess>[],
               (job) => job.result.httpCode,
-            )),
-            [([codeString]) => parseInt(codeString, 10)],
-            ['asc'],
-          ).map(([codeString, count]) => {
-            let color: string;
-            const code = parseInt(codeString, 10);
-
-            if (code < 100 || code >= 600) color = 'blue-grey darken-3';
-            else if (code <= 199) color = 'white black--text';
-            else if (code <= 299) color = 'green';
-            else if (code <= 399) color = 'yellow black--text';
-            else if (code <= 499) color = 'red';
-            else color = 'red darken-3';
-
-            let statusText: string | undefined;
-
-            try {
-              statusText = HttpStatus.getStatusText(code);
-            } catch (error) {
-              statusText = undefined;
-            }
-
-            return ({
-              code,
-              count,
-              color,
-              text: statusText,
-            });
-          }),
-          averageTime: jobResults.success === undefined || jobResults.success.length === 0 ? null
-            : (_.meanBy(
-              jobResults.success as Array<CompletedJob<JobResultSuccess> & BaseHistoryJob>,
-              'result.executionTime',
-            ) / 1000).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }),
+            )).map(([code, count]) => ({
+            code: parseInt(code, 10),
+            count,
+          })),
           executionTimes: jobResults.success
             ?.map((v) => (v.result as JobResultSuccess).executionTime) ?? [],
         });
@@ -610,18 +423,13 @@
 </script>
 
 <style lang="scss">
-  .history-url {
-    margin: -1px;
-    display: flex;
-    overflow: auto;
-  }
+  .history-container {
+    max-width: 1200px;
 
-  .history-status-chart-wrapper {
-    max-width: 250px
-  }
-
-  .info-button {
-    margin-top: -8px;
-    margin-bottom: -8px;
+    .history-url {
+      margin: -1px;
+      display: flex;
+      overflow: auto;
+    }
   }
 </style>

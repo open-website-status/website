@@ -2,9 +2,9 @@
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
       <span
-        class="history-url-element"
+        class="interactive-url-element"
         :class="{
-          'history-url-element--different': different
+          'interactive-url-element--different': different
         }"
         v-on="on"
       >
@@ -19,7 +19,7 @@
   import { Vue, Component, Prop } from 'vue-property-decorator';
 
   @Component
-  export default class HistoryURLElement extends Vue {
+  export default class InteractiveUrlElement extends Vue {
     @Prop({ default: false, type: Boolean }) readonly different!: boolean
 
     @Prop({ required: true, type: String }) readonly label!: string
@@ -27,7 +27,7 @@
 </script>
 
 <style lang="scss">
-  .history-url-element {
+  .interactive-url-element {
     padding: 1px 2px;
     margin: 1px 1px;
     background-color: #fff2;

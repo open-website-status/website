@@ -26,7 +26,7 @@
             type="submit"
             :disabled="!submitEnabled"
             class="mr-3"
-            :to="`/history/${url}`"
+            :to="historyRoute"
           >
             View history
           </v-btn>
@@ -105,6 +105,7 @@
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
   import VueRecaptcha from 'vue-recaptcha';
+  import _ from 'lodash';
 
   @Component({
     components: { VueRecaptcha },
@@ -161,6 +162,10 @@
       return [];
     }
 
+    get historyRoute () {
+      return `/history/${encodeURIComponent(this.url)}`;
+    }
+
     url = '';
 
     loading = false;
@@ -188,6 +193,11 @@
       this.recaptchaResponse = null;
       this.loading = false;
       this.captchaError = true;
+    }
+
+    created () {
+      const search: string | (string | null)[] | undefined = this.$route.query?.q;
+      if (_.isString(search)) this.url = search;
     }
   }
 </script>

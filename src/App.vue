@@ -41,7 +41,9 @@
         </v-list>
       </v-menu>
     </v-app-bar>
-    <router-view />
+    <v-scroll-x-transition mode="out-in">
+      <router-view />
+    </v-scroll-x-transition>
   </v-app>
 </template>
 

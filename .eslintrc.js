@@ -21,6 +21,10 @@ module.exports = {
     'vuetify/grid-unknown-attributes': 'error',
     'vuetify/no-legacy-grid': 'error',
     semi: ['error', 'always'],
+    'vue/component-name-in-template-casing': ['error', 'kebab-case', {
+      registeredComponentsOnly: false,
+      ignores: [],
+    }],
   },
   overrides: [
     {
