@@ -284,24 +284,41 @@
                       Execution time
                     </v-card-title>
                     <v-divider />
-                    <v-card-text class="text--primary">
-                      <v-alert
-                        v-if="query.timeoutCount > 0"
-                        color="amber"
-                        text
-                        border="left"
-                      >
-                        {{ query.timeoutCount }}
-                        {{ query.timeoutCount === 1 ? 'timeout' : 'timeouts' }}
-                      </v-alert>
+                    <template v-if="query.timeoutCount > 0">
+                      <v-card-text>
+                        <v-alert
+                          color="amber"
+                          text
+                          border="left"
+                          class="mb-0"
+                        >
+                          {{ query.timeoutCount }}
+                          {{ query.timeoutCount === 1 ? 'timeout' : 'timeouts' }}
+                        </v-alert>
+                      </v-card-text>
+                      <v-divider />
+                    </template>
+                    <v-card-text
+                      v-if="query.averageTime !== null"
+                      class="text--primary"
+                    >
                       <div class="text-center subtitle-1">
                         Average time:
                       </div>
                       <h4 class="text-center text-h3 font-weight-thin">
-                        {{ query.averageTime === null ? '-' : `${query.averageTime} s` }}
+                        {{ query.averageTime }} s
                       </h4>
-                      <ExecutionTimeChart :data="query.executionTimes" />
+                      <ExecutionTimeChart
+                        :data="query.executionTimes"
+                        class="mt-2"
+                      />
                     </v-card-text>
+                    <div
+                      v-if="query.averageTime === null"
+                      class="text-center text-subtitle-1 my-6 mx-4 text--secondary"
+                    >
+                      No responses
+                    </div>
                   </v-card>
                 </v-col>
               </v-row>
@@ -311,6 +328,7 @@
                   rounded
                   outlined
                   color="primary"
+                  :to="`/query-details/${query.id}`"
                 >
                   View details <v-icon right>
                     mdi-arrow-right
@@ -500,7 +518,7 @@
               description: 'Result has been received',
             },
           ],
-          completedJobCount: jobStateCounts.timeout ?? 0,
+          completedJobCount: jobStateCounts.completed ?? 0,
           timeoutCount: jobResults.timeout?.length ?? 0,
           errorCounts: jobResults.error === undefined ? [] : _.orderBy(
             _.toPairs(_.countBy(
