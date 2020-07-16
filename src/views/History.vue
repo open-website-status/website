@@ -203,7 +203,14 @@
   import ExecutionTimeCard from '@/components/ExecutionTimeCard.vue';
 
   @Component({
-    components: { JobResultsCard, JobStateCard, ExecutionTimeChart, ExecutionTimeCard, PieChart, InteractiveUrlElement },
+    components: {
+      JobResultsCard,
+      JobStateCard,
+      ExecutionTimeChart,
+      ExecutionTimeCard,
+      PieChart,
+      InteractiveUrlElement,
+    },
   })
   export default class History extends Vue {
     url: QueryURL | null = null;

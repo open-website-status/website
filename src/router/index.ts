@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import Home from '../views/Home.vue';
+import MainAppBar from '@/components/MainAppBar.vue';
 const History = () => import(/* webpackChunkName: "history" */ '../views/History.vue');
 const QueryDetails = () => import(/* webpackChunkName: "query-details" */ '../views/QueryDetails.vue');
 
@@ -10,18 +11,24 @@ const routes: Array<RouteConfig> = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
-  },
-  {
-    path: '/query/:queryId',
+    components: {
+      default: Home,
+      appBar: MainAppBar,
+    },
   },
   {
     path: '/history/:href',
-    component: History,
+    components: {
+      default: History,
+      appBar: MainAppBar,
+    },
   },
   {
     path: '/query-details/:queryId',
-    component: QueryDetails,
+    components: {
+      default: QueryDetails,
+      appBar: MainAppBar,
+    },
   },
 ];
 
