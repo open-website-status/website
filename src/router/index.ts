@@ -4,6 +4,8 @@ import Home from '../views/Home.vue';
 import MainAppBar from '@/components/MainAppBar.vue';
 const History = () => import(/* webpackChunkName: "history" */ '../views/History.vue');
 const QueryDetails = () => import(/* webpackChunkName: "query-details" */ '../views/QueryDetails.vue');
+const Console = () => import(/* webpackChunkName: "console" */ '../views/console/Console.vue');
+const ConsoleDashboard = () => import(/* webpackChunkName: "console" */ '../views/console/ConsoleDashboard.vue');
 
 Vue.use(VueRouter);
 
@@ -29,6 +31,28 @@ const routes: Array<RouteConfig> = [
       default: QueryDetails,
       appBar: MainAppBar,
     },
+  },
+  {
+    path: '/console*',
+    components: {
+      default: Console,
+    },
+    children: [
+      {
+        path: '',
+        component: ConsoleDashboard,
+      },
+      {
+        path: 'api-clients',
+      },
+      {
+        path: 'providers',
+      },
+      {
+        path: '*',
+        redirect: '/console',
+      },
+    ],
   },
 ];
 

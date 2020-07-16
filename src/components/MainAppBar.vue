@@ -12,33 +12,23 @@
     </v-btn>
     <v-toolbar-title>Open Website Status</v-toolbar-title>
     <v-spacer />
-    <v-menu offset-y>
-      <template v-slot:activator="{ on }">
-        <v-avatar
-          v-ripple
-          class="avatar"
-          :size="$vuetify.breakpoint.smAndDown ? 32 : undefined"
-          v-on="on"
-        >
-          <img
-            src="https://cdn.vuetifyjs.com/images/john.jpg"
-            alt="John"
-          >
-        </v-avatar>
-      </template>
-      <v-list>
-        <v-list-item>
-          <v-list-item-icon>
-            <v-icon>
-              mdi-logout
-            </v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>
-            Sign out
-          </v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+    <v-btn
+      v-if="$vuetify.breakpoint.smAndUp"
+      to="/console"
+      outlined
+      rounded
+    >
+      Open console
+    </v-btn>
+    <v-btn
+      v-else
+      to="/console"
+      outlined
+      rounded
+      small
+    >
+      Console
+    </v-btn>
   </v-app-bar>
 </template>
 
