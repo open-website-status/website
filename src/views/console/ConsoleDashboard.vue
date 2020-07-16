@@ -16,7 +16,18 @@
             :size="128"
             class="avatar elevation-8"
           >
-            <v-img src="https://picsum.photos/256" />
+            <v-img src="https://picsum.photos/256">
+              <template v-slot:placeholder>
+                <v-sheet
+                  color="grey darken-4"
+                  class="fill-height"
+                >
+                  <v-icon :size="80">
+                    mdi-account-circle
+                  </v-icon>
+                </v-sheet>
+              </template>
+            </v-img>
           </v-avatar>
         </div>
         <v-card-title class="d-block">
@@ -107,7 +118,7 @@
       margin-top: -64px;
 
       .avatar {
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        border: 1px solid #444;
       }
     }
 
