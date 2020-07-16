@@ -30,7 +30,7 @@
         Summary
       </h1>
       <div class="text-overline mx-2">
-        Check date
+        Check time
       </div>
       <h5
         class="text-h6 mx-2 mb-6"
