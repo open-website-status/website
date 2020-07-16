@@ -62,7 +62,7 @@
           {{ query.search }}
         </interactive-url-element>
       </div>
-      <div class="d-flex justify-end mb-6 mx-2">
+      <div class="d-flex justify-end mt-6 mb-4 mx-2">
         <v-btn
           rounded
           outlined
