@@ -41,6 +41,23 @@ export default {
         store.commit('setUser', auth.currentUser);
         return newCredential;
       },
+      linkGoogle: async () => {
+        if (auth.currentUser === null) throw new Error('User not signed in');
+        const credential = await auth.currentUser.linkWithPopup(googleProvider);
+        store.commit('setUser', auth.currentUser);
+        return credential;
+      },
+      linkGithub: async () => {
+        if (auth.currentUser === null) throw new Error('User not signed in');
+        const credential = await auth.currentUser.linkWithPopup(githubProvider);
+        store.commit('setUser', auth.currentUser);
+        return credential;
+      },
+      unlink: async (providerId: string) => {
+        if (auth.currentUser === null) throw new Error('User not signed in');
+        await auth.currentUser.unlink(providerId);
+        store.commit('setUser', auth.currentUser);
+      },
     };
     auth.onAuthStateChanged((user) => {
       store.commit('setUser', user);

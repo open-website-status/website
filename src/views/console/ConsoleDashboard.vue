@@ -6,50 +6,7 @@
     />
     <v-spacer />
     <div class="d-flex flex-column fill-width">
-      <v-card
-        outlined
-        class="mt-16 align-self-center text-center"
-        width="480"
-      >
-        <div class="d-flex justify-center avatar-wrapper">
-          <v-avatar
-            :size="128"
-            class="avatar elevation-8"
-          >
-            <v-img :src="$store.state.user.photoURL">
-              <template v-slot:placeholder>
-                <v-sheet
-                  color="grey darken-4"
-                  class="fill-height"
-                >
-                  <v-icon :size="80">
-                    mdi-account-circle
-                  </v-icon>
-                </v-sheet>
-              </template>
-            </v-img>
-          </v-avatar>
-        </div>
-        <v-card-title
-          class="d-block"
-          v-text="$store.state.user.displayName"
-        />
-        <v-card-subtitle
-          class="pb-0"
-          v-text="$store.state.user.email"
-        />
-        <v-card-actions class="my-2 mx-4">
-          <v-btn
-            outlined
-            rounded
-            large
-            block
-            @click="$auth.signOut"
-          >
-            Sign out
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+      <console-dashboard-account-card class="mt-16 align-self-center" />
     </div>
     <div class="fill-width pb-12">
       <v-row
@@ -97,8 +54,13 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
+  import ConsoleDashboardAccountCard from '@/components/ConsoleDashboardAccountCard.vue';
 
-  @Component
+  @Component({
+    components: {
+      ConsoleDashboardAccountCard,
+    },
+  })
   export default class ConsoleDashboard extends Vue {
     breadcrumbs = [
       {

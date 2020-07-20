@@ -1,14 +1,14 @@
 <template>
   <v-main>
     <v-progress-circular
-      v-if="loading || ($store.state.user !== null && !connected)"
+      v-if="loading || ($typedStore.state.user !== null && !connected)"
       :size="96"
       indeterminate
       color="primary"
       class="d-block mx-auto my-16"
     />
     <console-not-signed-in
-      v-else-if="$store.state.user === null"
+      v-else-if="$typedStore.state.user === null"
     />
     <router-view
       v-else
@@ -27,15 +27,15 @@
     loading = true;
     connected = false;
 
-    @Watch('$store.state.user', {
+    @Watch('$typedStore.state.user', {
       immediate: true,
     })
-    async onUserChanged (user: firebase.User | null) {
+    async onUserChanged (user: firebase.User | null, oldUser: firebase.User | null) {
       this.loading = true;
       try {
-      if (user) {
+      if (user !== null && oldUser?.uid !== user.uid) {
         await this.connect();
-      } else {
+      } else if (oldUser === null) {
         await this.disconnect();
       }
       } catch (error) {

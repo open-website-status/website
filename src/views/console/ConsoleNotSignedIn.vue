@@ -187,7 +187,7 @@
 
         if (firebaseError.code === 'auth/account-exists-with-different-credential') {
           try {
-            const providers = await this.$auth.fetchSignInMethodsForEmail(firebaseError.email);
+            const providers = await this.$auth.fetchSignInMethodsForEmail(firebaseError.email!);
             this.linking = {
               providers,
               credential: firebaseError.credential!,
