@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import Home from '../views/Home.vue';
 import MainAppBar from '@/components/MainAppBar.vue';
+const Home = () => import(/* webpackChunkName: "home" */ '../views/Home.vue');
 const History = () => import(/* webpackChunkName: "history" */ '../views/History.vue');
 const QueryDetails = () => import(/* webpackChunkName: "query-details" */ '../views/QueryDetails.vue');
 const Console = () => import(/* webpackChunkName: "console" */ '../views/console/Console.vue');

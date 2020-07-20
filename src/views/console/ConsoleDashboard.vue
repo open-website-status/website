@@ -16,7 +16,7 @@
             :size="128"
             class="avatar elevation-8"
           >
-            <v-img src="https://picsum.photos/256">
+            <v-img :src="$store.state.user.photoURL">
               <template v-slot:placeholder>
                 <v-sheet
                   color="grey darken-4"
@@ -30,18 +30,21 @@
             </v-img>
           </v-avatar>
         </div>
-        <v-card-title class="d-block">
-          Janusz Kowalski
-        </v-card-title>
-        <v-card-subtitle class="pb-0">
-          jan@kowalski.pl
-        </v-card-subtitle>
+        <v-card-title
+          class="d-block"
+          v-text="$store.state.user.displayName"
+        />
+        <v-card-subtitle
+          class="pb-0"
+          v-text="$store.state.user.email"
+        />
         <v-card-actions class="my-2 mx-4">
           <v-btn
             outlined
             rounded
             large
             block
+            @click="$auth.signOut"
           >
             Sign out
           </v-btn>

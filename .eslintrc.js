@@ -25,6 +25,7 @@ module.exports = {
       registeredComponentsOnly: false,
       ignores: [],
     }],
+    '@typescript-eslint/no-non-null-assertion': 'off',
   },
   overrides: [
     {
