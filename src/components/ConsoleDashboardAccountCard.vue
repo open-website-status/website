@@ -43,7 +43,7 @@
     </v-card-actions>
     <v-divider />
     <v-subheader class="mt-2">
-      Linked accounts
+      Sign in methods
     </v-subheader>
     <v-list
       subheader
@@ -72,8 +72,8 @@
             rounded
             small
             class="ml-2"
-            :disabled="linkLoading || linkedProviders.length <= 1"
-            @click="unlink(provider.id)"
+            :disabled="linkedProviders.length <= 1"
+            @click="unlinkConfirm = provider.id"
           >
             <v-icon left>
               mdi-link-off
@@ -96,6 +96,43 @@
         </v-list-item-action-text>
       </v-list-item>
     </v-list>
+
+    <v-dialog
+      max-width="400"
+      :value="unlinkConfirm"
+      :persistent="unlinkLoading"
+      @input="unlinkConfirmDialogChange"
+    >
+      <v-card color="grey darken-3">
+        <v-card-title>
+          Unlink account?
+        </v-card-title>
+        <v-card-text>
+          You will no longer be able to sign in using this method
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            text
+            :disabled="unlinkLoading"
+            @click="unlinkConfirm = null"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            color="primary"
+            :loading="unlinkLoading"
+            autofocus
+            @click="unlink()"
+          >
+            <v-icon left>
+              mdi-link-off
+            </v-icon>
+            Unlink
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -106,6 +143,8 @@
   @Component
   export default class ConsoleDashboardAccountCard extends Vue {
     linkLoading = false;
+    unlinkLoading = false;
+    unlinkConfirm: string | null = null;
 
     get providerItems () {
       if (this.$typedStore.state.user === null) return [];
@@ -154,14 +193,22 @@
       this.linkLoading = false;
     }
 
-    async unlink (providerId: string) {
-      this.linkLoading = true;
+    async unlink () {
+      if (!this.unlinkConfirm) return;
+      this.unlinkLoading = true;
       try {
-        await this.$auth.unlink(providerId);
+        await this.$auth.unlink(this.unlinkConfirm);
+        this.unlinkConfirm = null;
       } catch (error) {
         console.error(error);
       }
-      this.linkLoading = false;
+      this.unlinkLoading = false;
+    }
+
+    unlinkConfirmDialogChange (value: boolean) {
+      if (!value) {
+        this.unlinkConfirm = null;
+      }
     }
   }
 </script>
