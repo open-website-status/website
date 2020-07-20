@@ -1,12 +1,16 @@
 <template>
   <v-main>
-    <v-progress-circular
+    <div
       v-if="loading || ($typedStore.state.user !== null && !connected)"
-      :size="96"
-      indeterminate
-      color="primary"
-      class="d-block mx-auto my-16"
-    />
+      class="d-flex fill-height align-center justify-center"
+    >
+      <v-progress-circular
+        :size="96"
+        indeterminate
+        color="primary"
+        class="d-block mx-auto my-16"
+      />
+    </div>
     <console-not-signed-in
       v-else-if="$typedStore.state.user === null"
     />
