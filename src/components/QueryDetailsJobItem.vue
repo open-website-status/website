@@ -292,6 +292,7 @@
         year: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
+        second: 'numeric',
       });
     }
 
