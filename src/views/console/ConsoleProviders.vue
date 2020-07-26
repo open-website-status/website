@@ -69,6 +69,13 @@
               </provider-name-change-dialog>
             </div>
             <div class="text-overline mt-2">
+              Creation time
+            </div>
+            <div
+              class="text--secondary"
+              v-text="provider.creationTimestampString"
+            />
+            <div class="text-overline mt-2">
               Token
             </div>
             <v-sheet
@@ -260,6 +267,13 @@
           placeholderToken: placeholder,
           tokenRevealed: this.revealedTokens.includes(provider.id),
           regenerateLoading: this.regenerateLoading.includes(provider.id),
+          creationTimestampString: new Date(provider.creationTimestamp).toLocaleString(undefined, {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+          }),
         });
       }) ?? null;
     }
