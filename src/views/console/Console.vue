@@ -16,6 +16,10 @@
     />
     <router-view
       v-else
+      :providers="providers"
+      :create-provider-function="createProvider"
+      :rename-provider-function="renameProvider"
+      :reset-provider-token-function="resetProviderToken"
     />
   </v-main>
 </template>
@@ -23,6 +27,9 @@
 <script lang="ts">
   import { Component, Vue, Watch } from 'vue-property-decorator';
   import ConsoleNotSignedIn from '@/views/console/ConsoleNotSignedIn.vue';
+  import ConsoleSocket from '@/sockets/console';
+  import { Listener } from 'typed-event-emitter';
+  import { Provider } from '@/sockets/types';
 
   @Component({
     components: { ConsoleNotSignedIn },
@@ -30,6 +37,9 @@
   export default class Console extends Vue {
     loading = true;
     connected = false;
+    socket: ConsoleSocket | null = null;
+    socketListeners = new Array<Listener>();
+    providers: Provider[] | null = null;
 
     @Watch('$typedStore.state.user', {
       immediate: true,
@@ -50,12 +60,54 @@
 
     async connect () {
       const token = await this.$auth.getIdToken();
-      console.log(token);
+      this.socketListeners.forEach((listener) => listener.unbind());
+      this.socket?.close();
+      this.socket = new ConsoleSocket(token);
+      this.socketListeners = [
+        this.socket.onConnect(this.onConnect),
+        this.socket.onDisconnect(this.onDisconnect),
+        this.socket.onProviderList(this.onProviderList),
+      ];
+    }
+
+    disconnect () {
+      this.connected = false;
+      this.socketListeners.forEach((listener) => listener.unbind());
+      this.socketListeners = [];
+      this.socket?.close();
+      this.socket = null;
+    }
+
+    onConnect () {
       this.connected = true;
     }
 
-    async disconnect () {
+    onDisconnect () {
       this.connected = false;
+      this.providers = null;
+    }
+
+    onProviderList (providers: Provider[]) {
+      this.providers = providers;
+    }
+
+    beforeDestroy () {
+      this.disconnect();
+    }
+
+    async createProvider (name: string) {
+      if (this.socket === null || !this.connected) throw new Error('Socket not connected');
+      return await this.socket.createProvider(name);
+    }
+
+    async renameProvider (id: string, name: string) {
+      if (this.socket === null || !this.connected) throw new Error('Socket not connected');
+      return await this.socket.renameProvider(id, name);
+    }
+
+    async resetProviderToken (id: string) {
+      if (this.socket === null || !this.connected) throw new Error('Socket not connected');
+      return await this.socket.resetProviderToken(id);
     }
   }
 </script>

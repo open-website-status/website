@@ -6,6 +6,7 @@ const History = () => import(/* webpackChunkName: "history" */ '../views/History
 const QueryDetails = () => import(/* webpackChunkName: "query-details" */ '../views/QueryDetails.vue');
 const Console = () => import(/* webpackChunkName: "console" */ '../views/console/Console.vue');
 const ConsoleDashboard = () => import(/* webpackChunkName: "console" */ '../views/console/ConsoleDashboard.vue');
+const ConsoleProviders = () => import(/* webpackChunkName: "console-providers" */ '../views/console/ConsoleProviders.vue');
 
 Vue.use(VueRouter);
 
@@ -33,7 +34,7 @@ const routes: Array<RouteConfig> = [
     },
   },
   {
-    path: '/console*',
+    path: '/console',
     components: {
       default: Console,
     },
@@ -47,6 +48,7 @@ const routes: Array<RouteConfig> = [
       },
       {
         path: 'providers',
+        component: ConsoleProviders,
       },
       {
         path: '*',
