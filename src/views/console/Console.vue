@@ -17,9 +17,13 @@
     <router-view
       v-else
       :providers="providers"
+      :api-clients="apiClients"
       :create-provider-function="createProvider"
       :rename-provider-function="renameProvider"
       :reset-provider-token-function="resetProviderToken"
+      :create-api-client-function="createAPIClient"
+      :rename-api-client-function="renameAPIClient"
+      :reset-api-client-token-function="resetAPIClientToken"
     />
   </v-main>
 </template>
@@ -29,7 +33,7 @@
   import ConsoleNotSignedIn from '@/views/console/ConsoleNotSignedIn.vue';
   import ConsoleSocket from '@/sockets/console';
   import { Listener } from 'typed-event-emitter';
-  import { Provider } from '@/sockets/types';
+  import { APIClient, Provider } from '@/sockets/types';
 
   @Component({
     components: { ConsoleNotSignedIn },
@@ -40,6 +44,7 @@
     socket: ConsoleSocket | null = null;
     socketListeners = new Array<Listener>();
     providers: Provider[] | null = null;
+    apiClients: APIClient[] | null = null;
 
     @Watch('$typedStore.state.user', {
       immediate: true,
@@ -47,11 +52,11 @@
     async onUserChanged (user: firebase.User | null, oldUser: firebase.User | null) {
       this.loading = true;
       try {
-      if (user !== null && oldUser?.uid !== user.uid) {
-        await this.connect();
-      } else if (oldUser === null) {
-        await this.disconnect();
-      }
+        if (user !== null && oldUser?.uid !== user.uid) {
+          await this.connect();
+        } else if (oldUser === null) {
+          await this.disconnect();
+        }
       } catch (error) {
         console.error(error);
       }
@@ -67,6 +72,7 @@
         this.socket.onConnect(this.onConnect),
         this.socket.onDisconnect(this.onDisconnect),
         this.socket.onProviderList(this.onProviderList),
+        this.socket.onAPIClientList(this.onAPIClientList),
       ];
     }
 
@@ -85,10 +91,15 @@
     onDisconnect () {
       this.connected = false;
       this.providers = null;
+      this.apiClients = null;
     }
 
     onProviderList (providers: Provider[]) {
       this.providers = providers;
+    }
+
+    onAPIClientList (apiClients: APIClient[]) {
+      this.apiClients = apiClients;
     }
 
     beforeDestroy () {
@@ -108,6 +119,21 @@
     async resetProviderToken (id: string) {
       if (this.socket === null || !this.connected) throw new Error('Socket not connected');
       return await this.socket.resetProviderToken(id);
+    }
+
+    async createAPIClient (name: string, reCaptchaResponse: string) {
+      if (this.socket === null || !this.connected) throw new Error('Socket not connected');
+      return await this.socket.createAPIClient(name, reCaptchaResponse);
+    }
+
+    async renameAPIClient (id: string, name: string) {
+      if (this.socket === null || !this.connected) throw new Error('Socket not connected');
+      return await this.socket.renameAPIClient(id, name);
+    }
+
+    async resetAPIClientToken (id: string) {
+      if (this.socket === null || !this.connected) throw new Error('Socket not connected');
+      return await this.socket.resetAPIClientToken(id);
     }
   }
 </script>

@@ -7,6 +7,7 @@ const QueryDetails = () => import(/* webpackChunkName: "query-details" */ '../vi
 const Console = () => import(/* webpackChunkName: "console" */ '../views/console/Console.vue');
 const ConsoleDashboard = () => import(/* webpackChunkName: "console" */ '../views/console/ConsoleDashboard.vue');
 const ConsoleProviders = () => import(/* webpackChunkName: "console-providers" */ '../views/console/ConsoleProviders.vue');
+const ConsoleApiClients = () => import(/* webpackChunkName: "console-api-clients" */ '../views/console/ConsoleApiClients.vue');
 
 Vue.use(VueRouter);
 
@@ -45,6 +46,7 @@ const routes: Array<RouteConfig> = [
       },
       {
         path: 'api-clients',
+        component: ConsoleApiClients,
       },
       {
         path: 'providers',

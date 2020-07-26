@@ -1,15 +1,15 @@
 <template>
-  <v-container class="console-providers-container console-container d-flex flex-column">
+  <v-container class="console-api-clients-container console-container d-flex flex-column">
     <v-breadcrumbs
       :items="breadcrumbs"
     />
     <v-btn
       color="primary"
       class="my-8 align-self-center"
-      :loading="newProviderLoading"
-      @click="newProviderClick"
+      :loading="newApiClientLoading"
+      @click="newApiClientClick"
     >
-      Create new provider
+      Create new API client
     </v-btn>
     <v-alert
       class="mb-12"
@@ -21,7 +21,7 @@
       Sorry, there was an error with reCAPTCHA
     </v-alert>
     <v-progress-circular
-      v-if="providerItems === null"
+      v-if="apiClientItems === null"
       indeterminate
       color="primary"
       class="my-8 align-self-center"
@@ -33,11 +33,11 @@
       hover
     >
       <v-expansion-panel
-        v-for="provider in providerItems"
-        :key="provider.id"
+        v-for="apiClient in apiClientItems"
+        :key="apiClient.id"
       >
         <v-expansion-panel-header>
-          {{ provider.name }}
+          {{ apiClient.name }}
         </v-expansion-panel-header>
         <v-expansion-panel-content class="expansion-panel-content-remove-padding">
           <div class="px-4 px-sm-6 pb-4">
@@ -48,12 +48,12 @@
                 </div>
                 <div
                   class="text--secondary"
-                  v-text="provider.name"
+                  v-text="apiClient.name"
                 />
               </div>
-              <provider-name-change-dialog
-                :input="provider.name"
-                :rename-provider="getRenameProviderFunction(provider.id)"
+              <api-client-name-change-dialog
+                :input="apiClient.name"
+                :rename-api-client="getRenameApiClientFunction(apiClient.id)"
               >
                 <template v-slot:activator="{ on }">
                   <v-btn
@@ -66,14 +66,17 @@
                     </v-icon>
                   </v-btn>
                 </template>
-              </provider-name-change-dialog>
+              </api-client-name-change-dialog>
+            </div>
+            <div class="text-overline mt-2">
+              Token
             </div>
             <div class="text-overline mt-2">
               Creation time
             </div>
             <div
               class="text--secondary"
-              v-text="provider.creationTimestampString"
+              v-text="apiClient.creationTimestampString"
             />
             <div class="text-overline mt-2">
               Token
@@ -86,17 +89,17 @@
               <div
                 class="token mx-3 text-no-wrap overflow-x-hidden text-truncate"
                 :class="{
-                  'blur': !provider.tokenRevealed,
+                  'blur': !apiClient.tokenRevealed,
                 }"
-                v-text="provider.tokenRevealed ? provider.token : provider.placeholderToken"
+                v-text="apiClient.tokenRevealed ? apiClient.token : apiClient.placeholderToken"
               />
               <v-spacer />
               <v-divider vertical />
               <v-btn
-                v-if="!provider.tokenRevealed"
+                v-if="!apiClient.tokenRevealed"
                 icon
                 class="ma-1"
-                @click="revealToken(provider.id)"
+                @click="revealToken(apiClient.id)"
               >
                 <v-icon>
                   mdi-eye
@@ -106,7 +109,7 @@
                 v-else
                 icon
                 class="ma-1"
-                @click="hideToken(provider.id)"
+                @click="hideToken(apiClient.id)"
               >
                 <v-icon>
                   mdi-eye-off
@@ -115,7 +118,7 @@
               <v-btn
                 icon
                 class="my-1 mr-1"
-                @click="copy(provider.token)"
+                @click="copy(apiClient.token)"
               >
                 <v-icon>
                   mdi-content-copy
@@ -126,8 +129,8 @@
                 class="my-1 mr-1"
                 icon
                 color="red"
-                :loading="provider.regenerateLoading"
-                @click="resetProviderToken(provider.id)"
+                :loading="apiClient.regenerateLoading"
+                @click="resetApiClientToken(apiClient.id)"
               >
                 <v-icon>
                   mdi-refresh
@@ -139,8 +142,8 @@
                   class="ma-1"
                   text
                   color="red"
-                  :loading="provider.regenerateLoading"
-                  @click="resetProviderToken(provider.id)"
+                  :loading="apiClient.regenerateLoading"
+                  @click="resetApiClientToken(apiClient.id)"
                 >
                   <v-icon left>
                     mdi-refresh
@@ -150,26 +153,6 @@
               </template>
             </v-sheet>
           </div>
-          <!--          <v-divider />-->
-          <!--          <div class="px-4 px-sm-6 py-4 d-flex align-sm-center flex-column flex-sm-row">-->
-          <!--            <div class="text&#45;&#45;secondary">-->
-          <!--              You can delete this provider, because it hasn't been assigned job yet-->
-          <!--            </div>-->
-          <!--            <div class="d-flex grow">-->
-          <!--              <v-spacer />-->
-          <!--              <v-btn-->
-          <!--                text-->
-          <!--                color="red"-->
-          <!--                outlined-->
-          <!--                class="mt-4 ml-sm-4 mt-sm-4"-->
-          <!--              >-->
-          <!--                <v-icon left>-->
-          <!--                  mdi-delete-->
-          <!--                </v-icon>-->
-          <!--                Delete-->
-          <!--              </v-btn>-->
-          <!--            </div>-->
-          <!--          </div>-->
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -189,17 +172,17 @@
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import _ from 'lodash';
   import copy from 'clipboard-copy';
-  import ProviderNameChangeDialog from '@/components/ProviderNameChangeDialog.vue';
   import VueRecaptcha from 'vue-recaptcha';
-  import { Provider } from '@/sockets/types';
+  import { APIClient } from '@/sockets/types';
+  import ApiClientNameChangeDialog from '@/components/ApiClientNameChangeDialog.vue';
 
   @Component({
     components: {
-      ProviderNameChangeDialog,
+      ApiClientNameChangeDialog,
       VueRecaptcha,
     },
   })
-  export default class ConsoleProviders extends Vue {
+  export default class ConsoleApiClients extends Vue {
     $refs!: {
       recaptcha: VueRecaptcha;
     }
@@ -216,8 +199,8 @@
         exact: true,
       },
       {
-        text: 'Providers',
-        to: '/console/providers',
+        text: 'API Clients',
+        to: '/console/api-clients',
         exact: true,
       },
     ];
@@ -226,25 +209,25 @@
       type: Array,
       default: null,
     })
-    providers!: Provider[] | null;
+    apiClients!: APIClient[] | null;
 
     @Prop({
       type: Function,
       required: true,
     })
-    createProviderFunction!: (name: string, reCaptchaResponse: string) => Promise<Provider>
+    createApiClientFunction!: (name: string, reCaptchaResponse: string) => Promise<APIClient>
 
     @Prop({
       type: Function,
       required: true,
     })
-    renameProviderFunction!: (id: string, name: string) => Promise<Provider>
+    renameApiClientFunction!: (id: string, name: string) => Promise<APIClient>
 
     @Prop({
       type: Function,
       required: true,
     })
-    resetProviderTokenFunction!: (id: string) => Promise<Provider>
+    resetApiClientTokenFunction!: (id: string) => Promise<APIClient>
 
     revealedTokens = new Array<string>();
 
@@ -252,22 +235,22 @@
 
     placeholderTokens = new Map<string, string>();
 
-    get providerItems () {
-      return this.providers?.map(provider => {
-        let placeholderToken = this.placeholderTokens.get(provider.id);
+    get apiClientItems () {
+      return this.apiClients?.map(apiClient => {
+        let placeholderToken = this.placeholderTokens.get(apiClient.id);
         if (placeholderToken === undefined) {
           placeholderToken = this.generateObviouslyRandomString(32);
-          this.placeholderTokens.set(provider.id, placeholderToken);
+          this.placeholderTokens.set(apiClient.id, placeholderToken);
         }
 
         return {
-          id: provider.id,
-          name: provider.name,
-          token: provider.token,
+          id: apiClient.id,
+          name: apiClient.name,
+          token: apiClient.token,
           placeholderToken,
-          tokenRevealed: this.revealedTokens.includes(provider.id),
-          regenerateLoading: this.regenerateLoading.includes(provider.id),
-          creationTimestampString: new Date(provider.creationTimestamp).toLocaleString(undefined, {
+          tokenRevealed: this.revealedTokens.includes(apiClient.id),
+          regenerateLoading: this.regenerateLoading.includes(apiClient.id),
+          creationTimestampString: new Date(apiClient.creationTimestamp).toLocaleString(undefined, {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
@@ -307,44 +290,44 @@
       }
     }
 
-    newProviderLoading = false;
+    newApiClientLoading = false;
 
-    async newProviderClick () {
-      this.newProviderLoading = true;
+    async newApiClientClick () {
+      this.newApiClientLoading = true;
 
       if (this.recaptchaResponse === null) {
         this.$refs.recaptcha.execute();
       } else {
-        await this.createProvider();
+        await this.createApiClient();
       }
     }
 
-    async createProvider () {
+    async createApiClient () {
       await new Promise((resolve) => setTimeout(resolve, 2500));
 
       if (this.recaptchaResponse === null) {
         console.error('No captcha response');
-        this.newProviderLoading = false;
+        this.newApiClientLoading = false;
         return;
       }
 
       try {
-        await this.createProviderFunction('New provider', this.recaptchaResponse);
+        await this.createApiClientFunction('New API client', this.recaptchaResponse);
       } catch (error) {
         console.error(error);
       }
 
-      this.newProviderLoading = false;
+      this.newApiClientLoading = false;
     }
 
-    async resetProviderToken (id: string) {
+    async resetApiClientToken (id: string) {
       if (this.regenerateLoading.includes(id)) return;
       this.regenerateLoading.push(id);
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       try {
-        await this.resetProviderTokenFunction(id);
+        await this.resetApiClientTokenFunction(id);
         this.placeholderTokens.set(id, this.generateObviouslyRandomString(32));
       } catch (error) {
         console.error(error);
@@ -353,9 +336,9 @@
       this.regenerateLoading = _.without(this.regenerateLoading, id);
     }
 
-    getRenameProviderFunction (id: string) {
+    getRenameApiClientFunction (id: string) {
       return async (name: string) => {
-        await this.renameProviderFunction(id, name);
+        await this.renameApiClientFunction(id, name);
       };
     }
 
@@ -365,25 +348,25 @@
 
     async onCaptchaVerify (response: string) {
       this.recaptchaResponse = response;
-      await this.createProvider();
+      await this.createApiClient();
       this.captchaError = false;
     }
 
     onCaptchaExpired () {
       this.recaptchaResponse = null;
-      this.newProviderLoading = false;
+      this.newApiClientLoading = false;
     }
 
     onCaptchaError () {
       this.recaptchaResponse = null;
-      this.newProviderLoading = false;
+      this.newApiClientLoading = false;
       this.captchaError = true;
     }
   }
 </script>
 
 <style lang="scss">
-  .console-providers-container {
+  .console-api-clients-container {
     .expansion-panel-content-remove-padding > .v-expansion-panel-content__wrap {
       padding: 0;
     }
