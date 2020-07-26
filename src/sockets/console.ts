@@ -25,10 +25,11 @@ export default class ConsoleSocket extends EventEmitter {
     this.socket.on('disconnect', () => this.emit(this.onDisconnect));
   }
 
-  public createProvider (name: string) {
+  public createProvider (name: string, reCaptchaResponse: string) {
     return new Promise<Provider>((resolve, reject) => {
       this.socket.emit('create-provider', {
         name,
+        reCaptchaResponse,
       }, (error: string, provider: Provider) => {
         if (error) {
           reject(new Error(error));

@@ -95,9 +95,9 @@
       this.disconnect();
     }
 
-    async createProvider (name: string) {
+    async createProvider (name: string, reCaptchaResponse: string) {
       if (this.socket === null || !this.connected) throw new Error('Socket not connected');
-      return await this.socket.createProvider(name);
+      return await this.socket.createProvider(name, reCaptchaResponse);
     }
 
     async renameProvider (id: string, name: string) {

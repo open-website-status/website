@@ -225,7 +225,7 @@
       type: Function,
       required: true,
     })
-    createProviderFunction!: (name: string) => Promise<Provider>
+    createProviderFunction!: (name: string, reCaptchaResponse: string) => Promise<Provider>
 
     @Prop({
       type: Function,
@@ -308,8 +308,14 @@
     async createProvider () {
       await new Promise((resolve) => setTimeout(resolve, 2500));
 
+      if (this.recaptchaResponse === null) {
+        console.error('No captcha response');
+        this.newProviderLoading = false;
+        return;
+      }
+
       try {
-        await this.createProviderFunction('New provider');
+        await this.createProviderFunction('New provider', this.recaptchaResponse);
       } catch (error) {
         console.error(error);
       }

@@ -141,6 +141,12 @@
       const url = new URL(this.url.trim());
       console.log(url);
 
+      if (this.recaptchaResponse === null) {
+        console.error('No captcha response');
+        this.loading = false;
+        return;
+      }
+
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
       this.loading = false;
