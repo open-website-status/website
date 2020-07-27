@@ -4,10 +4,6 @@ import MainAppBar from '@/components/MainAppBar.vue';
 const Home = () => import(/* webpackChunkName: "home" */ '../views/Home.vue');
 const History = () => import(/* webpackChunkName: "history" */ '../views/History.vue');
 const QueryDetails = () => import(/* webpackChunkName: "query-details" */ '../views/QueryDetails.vue');
-const Console = () => import(/* webpackChunkName: "console" */ '../views/console/Console.vue');
-const ConsoleDashboard = () => import(/* webpackChunkName: "console" */ '../views/console/ConsoleDashboard.vue');
-const ConsoleProviders = () => import(/* webpackChunkName: "console-providers" */ '../views/console/ConsoleProviders.vue');
-const ConsoleApiClients = () => import(/* webpackChunkName: "console-api-clients" */ '../views/console/ConsoleApiClients.vue');
 
 Vue.use(VueRouter);
 
@@ -33,30 +29,6 @@ const routes: Array<RouteConfig> = [
       default: QueryDetails,
       appBar: MainAppBar,
     },
-  },
-  {
-    path: '/console',
-    components: {
-      default: Console,
-    },
-    children: [
-      {
-        path: '',
-        component: ConsoleDashboard,
-      },
-      {
-        path: 'api-clients',
-        component: ConsoleApiClients,
-      },
-      {
-        path: 'providers',
-        component: ConsoleProviders,
-      },
-      {
-        path: '*',
-        redirect: '/console',
-      },
-    ],
   },
 ];
 

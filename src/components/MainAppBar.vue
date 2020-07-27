@@ -14,7 +14,7 @@
     <v-spacer />
     <v-btn
       v-if="$vuetify.breakpoint.smAndUp"
-      to="/console"
+      :href="consoleHref"
       outlined
       rounded
     >
@@ -22,7 +22,7 @@
     </v-btn>
     <v-btn
       v-else
-      to="/console"
+      :href="consoleHref"
       outlined
       rounded
       small
@@ -37,6 +37,8 @@
 
   @Component
   export default class MainAppBar extends Vue {
-
+    get consoleHref () {
+      return process.env.VUE_APP_CONSOLE_HREF;
+    }
   }
 </script>
