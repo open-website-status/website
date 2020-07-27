@@ -92,7 +92,7 @@
     </v-overlay>
     <vue-recaptcha
       ref="recaptcha"
-      sitekey="6LcZia0ZAAAAAJIfAAU6gZ_y3NuN3dTwWe_ZtZ_3"
+      :sitekey="recaptchaSiteKey"
       load-recaptcha-script
       size="invisible"
       @verify="onCaptchaVerify"
@@ -113,6 +113,10 @@
   export default class Home extends Vue {
     $refs!: {
       recaptcha: VueRecaptcha;
+    }
+
+    get recaptchaSiteKey () {
+      return process.env.VUE_APP_RECAPTCHA_SITEKEY;
     }
 
     async submit (): Promise<void> {
