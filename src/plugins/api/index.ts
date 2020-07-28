@@ -28,6 +28,13 @@ export class WebsiteAPI {
     this.api.onConnectedProvidersCount((count) => {
       store.commit('setConnectedProvidersCount', count);
     });
+
+    this.api.onJobList((queryId, jobs) => {
+      store.commit('setJobs', {
+        queryId,
+        jobs,
+      });
+    });
   }
 
   public async reconnect (): Promise<void> {
@@ -38,6 +45,13 @@ export class WebsiteAPI {
 
   public query (data: WebsiteQueryMessage): Promise<Query> {
     return this.api.queryWebsite(data);
+  }
+
+  public getQuery (id: string, subscribe: boolean): Promise<Query> {
+    return this.api.getQuery({
+      queryId: id,
+      subscribe,
+    });
   }
 }
 

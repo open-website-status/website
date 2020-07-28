@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex, { Store } from 'vuex';
+import { Job } from '@open-website-status/api';
 
 Vue.use(Vuex);
 
@@ -14,6 +15,12 @@ export interface State {
   apiConnectionError: boolean;
   apiError: string | null;
   connectedProvidersCount: number | null;
+  jobs: Record<string, Job[] | undefined>;
+}
+
+export interface SetJobsOptions {
+  queryId: string;
+  jobs: Job[];
 }
 
 export default new Vuex.Store<State>({
@@ -22,6 +29,7 @@ export default new Vuex.Store<State>({
     apiConnectionError: false,
     apiError: null,
     connectedProvidersCount: null,
+    jobs: {},
   },
   mutations: {
     setConnected (state, connected: boolean): void {
@@ -35,6 +43,9 @@ export default new Vuex.Store<State>({
     },
     setConnectedProvidersCount (state, connectedProvidersCount: number | null) {
       state.connectedProvidersCount = connectedProvidersCount;
+    },
+    setJobs (state, { queryId, jobs }: SetJobsOptions) {
+      Vue.set(state.jobs, queryId, jobs);
     },
   },
   actions: {

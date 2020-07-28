@@ -276,17 +276,17 @@
 
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
-  import { FullJob } from '@/types';
   import * as iso3166 from 'iso-3166-2';
   import HttpStatus from 'http-status-codes';
+  import { Job } from '@open-website-status/api';
 
   @Component
   export default class QueryDetailsJobItem extends Vue {
     @Prop({ required: true, type: Object })
-    readonly job!: FullJob;
+    readonly job!: Job;
 
-    private static dateToString (date: Date) {
-      return date.toLocaleString(undefined, {
+    private static dateToString (date: string) {
+      return new Date(date).toLocaleString(undefined, {
         day: 'numeric',
         month: 'long',
         year: 'numeric',

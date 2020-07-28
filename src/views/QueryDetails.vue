@@ -24,6 +24,16 @@
       />
     </v-container>
     <v-container
+      v-else-if="query === null"
+      class="fill-height align-center justify-center"
+    >
+      <v-progress-circular
+        indeterminate
+        :size="96"
+        color="primary"
+      />
+    </v-container>
+    <v-container
       v-else
       class="query-details-container px-4 px-sm-8"
     >
@@ -48,7 +58,7 @@
           {{ query.hostname }}
         </interactive-url-element>
         <interactive-url-element
-          v-if="query.port !== undefined"
+          v-if="query.port"
           label="Port"
         >
           :{{ query.port }}
@@ -82,96 +92,104 @@
           Retry
         </v-btn>
       </div>
-      <v-row>
-        <v-col
-          :cols="12"
-          :sm="6"
-          :md="4"
-        >
-          <job-state-card
-            :job-states="jobStates"
-            class="fill-height"
-          />
-        </v-col>
-        <v-col
-          :cols="12"
-          :sm="6"
-          :md="4"
-        >
-          <job-results-card
-            :timeout-count="timeoutCount"
-            :error-counts="errorCounts"
-            :http-code-counts="httpCodeCounts"
-            class="fill-height"
-          />
-        </v-col>
-        <v-col
-          :cols="12"
-          :sm="12"
-          :md="4"
-        >
-          <execution-time-card
-            :timeout-count="timeoutCount"
-            :execution-times="executionTimes"
-            class="fill-height"
-          />
-        </v-col>
-      </v-row>
-      <h1 class="text-h4 my-6 mx-2">
-        Job list
-      </h1>
-      <!-- TODO: Add transitions -->
-      <v-list subheader>
-        <v-subheader>Completed</v-subheader>
-        <div
-          v-if="completedJobs.length === 0"
-          class="text-center mx-3 my-2 text--secondary text-body-2"
-        >
-          No completed jobs
-        </div>
-        <query-details-job-item
-          v-for="job in completedJobs"
-          :key="job.id"
-          :job="job"
+      <div
+        v-if="jobs === null"
+        class="d-flex align-center justify-center my-8"
+      >
+        <v-progress-circular
+          indeterminate
+          :size="96"
+          color="primary"
         />
-        <v-subheader>In progress</v-subheader>
-        <div
-          v-if="jobsInProgress.length === 0"
-          class="text-center mx-3 my-2 text--secondary text-body-2"
-        >
-          No jobs in progress
-        </div>
-        <query-details-job-item
-          v-for="job in jobsInProgress"
-          :key="job.id"
-          :job="job"
-        />
-        <v-subheader>Canceled or rejected</v-subheader>
-        <div
-          v-if="canceledOrRejectedJobs.length === 0"
-          class="text-center mx-3 mt-2 mb-4 text--secondary text-body-2"
-        >
-          No canceled or rejected jobs
-        </div>
-        <query-details-job-item
-          v-for="job in canceledOrRejectedJobs"
-          :key="job.id"
-          :job="job"
-        />
-      </v-list>
+      </div>
+      <template v-else>
+        <v-row>
+          <v-col
+            :cols="12"
+            :sm="6"
+            :md="4"
+          >
+            <job-state-card
+              :job-states="jobStates"
+              class="fill-height"
+            />
+          </v-col>
+          <v-col
+            :cols="12"
+            :sm="6"
+            :md="4"
+          >
+            <job-results-card
+              :timeout-count="timeoutCount"
+              :error-counts="errorCounts"
+              :http-code-counts="httpCodeCounts"
+              class="fill-height"
+            />
+          </v-col>
+          <v-col
+            :cols="12"
+            :sm="12"
+            :md="4"
+          >
+            <execution-time-card
+              :timeout-count="timeoutCount"
+              :execution-times="executionTimes"
+              class="fill-height"
+            />
+          </v-col>
+        </v-row>
+        <h1 class="text-h4 my-6 mx-2">
+          Job list
+        </h1>
+        <!-- TODO: Add transitions -->
+        <v-list subheader>
+          <v-subheader>Completed</v-subheader>
+          <div
+            v-if="completedJobs.length === 0"
+            class="text-center mx-3 my-2 text--secondary text-body-2"
+          >
+            No completed jobs
+          </div>
+          <query-details-job-item
+            v-for="job in completedJobs"
+            :key="job.id"
+            :job="job"
+          />
+          <v-subheader>In progress</v-subheader>
+          <div
+            v-if="jobsInProgress.length === 0"
+            class="text-center mx-3 my-2 text--secondary text-body-2"
+          >
+            No jobs in progress
+          </div>
+          <query-details-job-item
+            v-for="job in jobsInProgress"
+            :key="job.id"
+            :job="job"
+          />
+          <v-subheader>Canceled or rejected</v-subheader>
+          <div
+            v-if="canceledOrRejectedJobs.length === 0"
+            class="text-center mx-3 mt-2 mb-4 text--secondary text-body-2"
+          >
+            No canceled or rejected jobs
+          </div>
+          <query-details-job-item
+            v-for="job in canceledOrRejectedJobs"
+            :key="job.id"
+            :job="job"
+          />
+        </v-list>
+      </template>
     </v-container>
   </v-main>
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Vue, Watch } from 'vue-property-decorator';
   import {
-    CompletedFullJob,
-    FullJob,
-    JobResultError,
     JobResultSuccess,
     JobStateItem,
-    Query,
   } from '@/types';
   import JobStateCard from '@/components/JobStateCard.vue';
   import JobResultsCard from '@/components/JobResultsCard.vue';
@@ -181,6 +199,8 @@
   import InteractiveUrlElement from '@/components/InteractiveUrlElement.vue';
   import QueryDetailsJobItem from '@/components/QueryDetailsJobItem.vue';
   import NotConnectedContainer from '@/components/NotConnectedContainer.vue';
+  import { CompletedJob, Query } from '@open-website-status/api';
+  import { Dictionary } from 'vue-router/types/router';
 
   @Component({
     components: {
@@ -198,90 +218,32 @@
       message: string | null;
     } | null = null
 
-    query: Query = {
-      id: '123456',
-      protocol: 'http:',
-      hostname: 'www.google.com',
-      port: undefined,
-      pathname: '/path',
-      search: '',
-      timestamp: new Date(),
+    query: Query | null = null;
+
+    get jobs (): Job[] | null {
+      if (this.queryId === null) return null;
+      return this.$typedStore.state.jobs[this.queryId] ?? null;
     }
 
-    jobs: FullJob[] = [
-      {
-        id: 'abcdef',
-        queryId: '123456',
-        jobState: 'completed',
-        countryCode: 'PL',
-        ispName: 'Y-Mobile',
-        regionCode: 'DS',
-        dispatchTimestamp: new Date(),
-        acceptTimestamp: new Date(),
-        completeTimestamp: new Date(),
-        result: {
-          state: 'success',
-          httpCode: 200,
-          executionTime: 8192,
-        },
-      },
-      {
-        id: 'fafsafra',
-        queryId: '123456',
-        jobState: 'completed',
-        countryCode: 'PL',
-        ispName: 'Purple',
-        regionCode: 'MA',
-        dispatchTimestamp: new Date(),
-        completeTimestamp: new Date(),
-        acceptTimestamp: new Date(),
-        result: {
-          state: 'error',
-          errorCode: 'Random error',
-        },
-      },
-      {
-        id: 'not-random',
-        queryId: '123456',
-        jobState: 'completed',
-        countryCode: 'US',
-        ispName: 'Minus',
-        regionCode: 'NY',
-        dispatchTimestamp: new Date(),
-        acceptTimestamp: new Date(),
-        completeTimestamp: new Date(),
-        result: {
-          state: 'timeout',
-          executionTime: 32768,
-        },
-      },
-      {
-        id: 'who-even-cares',
-        queryId: '123456',
-        jobState: 'accepted',
-        dispatchTimestamp: new Date(),
-        acceptTimestamp: new Date(),
-        countryCode: 'PL',
-        ispName: 'Pause',
-        regionCode: 'MA',
-      },
-    ]
-
     get href () {
+      if (this.query === null) return null;
       const { protocol, hostname, port, pathname, search } = this.query;
-      return `${protocol}//${hostname}${port === undefined ? '' : `:${port}`}${pathname}${search}`;
+      return `${protocol}//${hostname}${_.isNil(port) ? '' : `:${port}`}${pathname}${search}`;
     }
 
     get retryRoute () {
+      if (this.href === null) return null;
       return `/?q=${encodeURIComponent(this.href)}`;
     }
 
     get historyRoute () {
+      if (this.href === null) return null;
       return `/history/${encodeURIComponent(this.href)}`;
     }
 
     get dateString () {
-      return this.query.timestamp.toLocaleString(undefined, {
+      if (this.query === null) return null;
+      return new Date(this.query.timestamp).toLocaleString(undefined, {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
@@ -291,6 +253,7 @@
     }
 
     get jobStateCounts () {
+      if (this.jobs === null) return null;
       return _.defaults(
         _.countBy(this.jobs, 'jobState'),
         {
@@ -303,8 +266,9 @@
       );
     }
 
-    get jobResults () {
-      const completedJobs = this.jobs.filter((job) => job.jobState === 'completed') as CompletedFullJob[];
+    get jobResults (): null | Dictionary<CompletedJob> {
+      if (this.jobs === null) return null;
+      const completedJobs = this.jobs.filter((job) => job.jobState === 'completed');
 
       return _.groupBy(
         completedJobs,
@@ -313,22 +277,27 @@
     }
 
     get completedJobs () {
+      if (this.jobs === null) return null;
       return this.jobs.filter((job) => job.jobState === 'completed');
     }
 
     get jobsInProgress () {
+      if (this.jobs === null) return null;
       return this.jobs.filter((job) => job.jobState === 'dispatched' || job.jobState === 'accepted');
     }
 
     get canceledOrRejectedJobs () {
+      if (this.jobs === null) return null;
       return this.jobs.filter((job) => job.jobState === 'canceled' || job.jobState === 'rejected');
     }
 
     get timeoutCount () {
+      if (this.jobResults === null) return;
       return this.jobResults.timeout?.length ?? 0;
     }
 
     get jobStates (): JobStateItem[] {
+      if (this.jobStateCounts === null) return null;
       return [
         {
           label: 'Dispatched',
@@ -364,31 +333,55 @@
     }
 
     get executionTimes () {
+      if (this.jobResults === null) return;
       return this.jobResults.success?.map(
         (v) => (v.result as JobResultSuccess).executionTime,
       ) ?? [];
     }
 
     get errorCounts () {
+      if (this.jobResults === null) return;
       if (this.jobResults.error === undefined) return [];
       return _.toPairs(
         _.countBy(
-          this.jobResults.error as CompletedFullJob<JobResultError>[],
+          this.jobResults.error as CompletedJob[],
           (job) => job.result.errorCode,
         ),
       ).map(([code, count]) => ({ code, count }));
     }
 
     get httpCodeCounts () {
+      if (this.jobResults === null) return;
       if (this.jobResults.success === undefined) return [];
       return _.toPairs(
         _.countBy(
-          this.jobResults.success as CompletedFullJob<JobResultSuccess>[],
+          this.jobResults.success as CompletedJob[],
           (job) => job.result.httpCode,
         )).map(([code, count]) => ({
         code: parseInt(code, 10),
         count,
       }));
+    }
+
+    get queryId () {
+      if (!this.$typedStore.state.connected) return null;
+      return this.$route.params.queryId;
+    }
+
+    @Watch('queryId', {
+      immediate: true,
+    })
+    async onQueryIdChanged (value: string | null) {
+      this.query = null;
+      if (value === null) return;
+      try {
+        this.query = await this.$api.getQuery(value, true);
+      } catch (error) {
+        this.error = {
+          title: 'Failed to get query',
+          message: error instanceof Error ? error.message : null,
+        };
+      }
     }
   }
 </script>

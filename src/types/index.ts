@@ -16,11 +16,6 @@ export interface QueryURL {
   search: string;
 }
 
-export interface Query extends QueryURL {
-  id: string;
-  timestamp: Date;
-}
-
 export interface JobResultSuccess {
   state: 'success';
   httpCode: number;
@@ -40,4 +35,3 @@ export interface JobResultError {
 export type JobResult = JobResultSuccess | JobResultTimeout | JobResultError;
 
 export * from './history';
-export * from './full-jobs';

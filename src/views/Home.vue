@@ -172,7 +172,7 @@
 
       const data = {
         reCaptchaResponse: this.recaptchaResponse,
-        subscribe: true,
+        subscribe: false,
         protocol: url.protocol,
         hostname: url.hostname,
         port: url.port === '' ? undefined : parseInt(url.port),
