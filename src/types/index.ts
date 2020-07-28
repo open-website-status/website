@@ -1,3 +1,10 @@
+import {
+  CompletedJob,
+  JobResultError,
+  JobResultSuccess,
+  JobResultTimeout
+} from "@open-website-status/api";
+
 export interface PieChartData {
   data: number;
   color: string;
@@ -16,22 +23,17 @@ export interface QueryURL {
   search: string;
 }
 
-export interface JobResultSuccess {
-  state: 'success';
-  httpCode: number;
-  executionTime: number;
-}
-
-export interface JobResultTimeout {
-  state: 'timeout';
-  executionTime: number;
-}
-
-export interface JobResultError {
-  state: 'error';
-  errorCode: string;
-}
-
-export type JobResult = JobResultSuccess | JobResultTimeout | JobResultError;
-
 export * from './history';
+
+export interface CompletedJobSuccess extends CompletedJob {
+  result: JobResultSuccess;
+}
+
+export interface CompletedJobError extends CompletedJob {
+  result: JobResultError;
+}
+
+export interface CompletedJobTimeout extends CompletedJob {
+  result: JobResultTimeout;
+}
+

@@ -1,4 +1,5 @@
-import { JobResult, QueryURL } from '@/types';
+import { QueryURL } from '@/types';
+import {JobResult} from "@open-website-status/api";
 
 export interface BaseHistoryJob {
   id: string;

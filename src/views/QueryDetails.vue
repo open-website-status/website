@@ -188,7 +188,8 @@
 <script lang="ts">
   import { Component, Vue, Watch } from 'vue-property-decorator';
   import {
-    JobResultSuccess,
+    CompletedJobError,
+    CompletedJobSuccess,
     JobStateItem,
   } from '@/types';
   import JobStateCard from '@/components/JobStateCard.vue';
@@ -199,7 +200,7 @@
   import InteractiveUrlElement from '@/components/InteractiveUrlElement.vue';
   import QueryDetailsJobItem from '@/components/QueryDetailsJobItem.vue';
   import NotConnectedContainer from '@/components/NotConnectedContainer.vue';
-  import { CompletedJob, Query } from '@open-website-status/api';
+  import { CompletedJob, Job, JobResultSuccess, Query } from '@open-website-status/api';
   import { Dictionary } from 'vue-router/types/router';
 
   @Component({
@@ -252,7 +253,7 @@
       });
     }
 
-    get jobStateCounts () {
+    get jobStateCounts (): { canceled: number; dispatched: number; rejected: number; accepted: number; completed: number } | null {
       if (this.jobs === null) return null;
       return _.defaults(
         _.countBy(this.jobs, 'jobState'),
@@ -266,9 +267,9 @@
       );
     }
 
-    get jobResults (): null | Dictionary<CompletedJob> {
+    get jobResults (): null | Dictionary<CompletedJob[]> {
       if (this.jobs === null) return null;
-      const completedJobs = this.jobs.filter((job) => job.jobState === 'completed');
+      const completedJobs = this.jobs.filter((job) => job.jobState === 'completed') as CompletedJob[];
 
       return _.groupBy(
         completedJobs,
@@ -296,7 +297,7 @@
       return this.jobResults.timeout?.length ?? 0;
     }
 
-    get jobStates (): JobStateItem[] {
+    get jobStates (): JobStateItem[] | null {
       if (this.jobStateCounts === null) return null;
       return [
         {
@@ -344,7 +345,7 @@
       if (this.jobResults.error === undefined) return [];
       return _.toPairs(
         _.countBy(
-          this.jobResults.error as CompletedJob[],
+          this.jobResults.error as CompletedJobError[],
           (job) => job.result.errorCode,
         ),
       ).map(([code, count]) => ({ code, count }));
@@ -355,7 +356,7 @@
       if (this.jobResults.success === undefined) return [];
       return _.toPairs(
         _.countBy(
-          this.jobResults.success as CompletedJob[],
+          this.jobResults.success as CompletedJobSuccess[],
           (job) => job.result.httpCode,
         )).map(([code, count]) => ({
         code: parseInt(code, 10),

@@ -122,6 +122,7 @@
   import VueRecaptcha from 'vue-recaptcha';
   import _ from 'lodash';
   import NotConnectedContainer from '@/components/NotConnectedContainer.vue';
+  import { WebsiteQueryMessage } from '@open-website-status/api';
 
   @Component({
     components: {
@@ -170,7 +171,13 @@
         return;
       }
 
-      const data = {
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+        this.error = 'The protocol must be either http: or https:';
+        this.loading = false;
+        return;
+      }
+
+      const data: WebsiteQueryMessage = {
         reCaptchaResponse: this.recaptchaResponse,
         subscribe: false,
         protocol: url.protocol,

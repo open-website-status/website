@@ -194,8 +194,7 @@
   import {
     CompletedHistoryJob,
     HistoryQuery,
-    JobResultError,
-    JobResultSuccess, QueryURL,
+    QueryURL,
   } from '@/types';
   import _ from 'lodash';
   import ExecutionTimeChart from '@/components/ExecutionTimeChart.vue';
@@ -203,6 +202,7 @@
   import JobResultsCard from '@/components/JobResultsCard.vue';
   import ExecutionTimeCard from '@/components/ExecutionTimeCard.vue';
   import NotConnectedContainer from '@/components/NotConnectedContainer.vue';
+  import { JobResultError, JobResultSuccess } from '@open-website-status/api';
 
   @Component({
     components: {
