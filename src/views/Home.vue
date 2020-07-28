@@ -54,35 +54,37 @@
       >
         Sorry, there was an error with reCAPTCHA
       </v-alert>
-      <v-alert
-        v-if="activeProviderCount === 0"
-        text
-        class="mt-7"
-        :class="{
-          'shake': shakeNoProviders
-        }"
-        color="error"
-        icon="mdi-alert"
-      >
-        There are no active providers. You will only be able to see history
-      </v-alert>
-      <v-alert
-        v-else-if="activeProviderCount === 1"
-        text
-        class="mt-7"
-        color="warning"
-        icon="mdi-information"
-      >
-        There is one active provider
-      </v-alert>
-      <v-alert
-        v-else
-        text
-        class="mt-7"
-        icon="mdi-information"
-      >
-        There are {{ activeProviderCount }} active providers
-      </v-alert>
+      <template v-if="$typedStore.state.connectedProvidersCount !== null">
+        <v-alert
+          v-if="$typedStore.state.connectedProvidersCount === 0"
+          text
+          class="mt-7"
+          :class="{
+            'shake': shakeNoProviders
+          }"
+          color="error"
+          icon="mdi-alert"
+        >
+          There are no active providers. You will only be able to see history
+        </v-alert>
+        <v-alert
+          v-else-if="$typedStore.state.connectedProvidersCount === 1"
+          text
+          class="mt-7"
+          color="warning"
+          icon="mdi-information"
+        >
+          There is one active provider
+        </v-alert>
+        <v-alert
+          v-else
+          text
+          class="mt-7"
+          icon="mdi-information"
+        >
+          There are {{ $typedStore.state.connectedProvidersCount }} active providers
+        </v-alert>
+      </template>
     </v-container>
     <v-overlay
       absolute
@@ -131,7 +133,7 @@
       if (!this.submitEnabled) return;
       if (this.loading) return;
 
-      if (this.activeProviderCount === 0) {
+      if (this.$typedStore.state.connectedProvidersCount === 0) {
         if (!this.shakeNoProviders) {
           this.shakeNoProviders = true;
           await new Promise((resolve) => setTimeout(resolve, 750));
@@ -187,8 +189,6 @@
     url = '';
 
     loading = false;
-
-    activeProviderCount = 0;
 
     recaptchaResponse: null | string = null;
 

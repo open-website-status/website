@@ -24,6 +24,10 @@ export class WebsiteAPI {
     this.api.onError((error: string) => {
       store.commit('setAPIError', error);
     });
+
+    this.api.onConnectedProvidersCount((count) => {
+      store.commit('setConnectedProvidersCount', count);
+    });
   }
 
   public async reconnect (): Promise<void> {

@@ -13,6 +13,7 @@ export interface State {
   connected: boolean;
   apiConnectionError: boolean;
   apiError: string | null;
+  connectedProvidersCount: number | null;
 }
 
 export default new Vuex.Store<State>({
@@ -20,6 +21,7 @@ export default new Vuex.Store<State>({
     connected: false,
     apiConnectionError: false,
     apiError: null,
+    connectedProvidersCount: null,
   },
   mutations: {
     setConnected (state, connected: boolean): void {
@@ -31,6 +33,9 @@ export default new Vuex.Store<State>({
     setAPIError (state, error: string | null): void {
       state.apiError = error;
     },
+    setConnectedProvidersCount (state, connectedProvidersCount: number | null) {
+      state.connectedProvidersCount = connectedProvidersCount;
+    },
   },
   actions: {
     connect (context) {
@@ -40,6 +45,7 @@ export default new Vuex.Store<State>({
     },
     disconnect (context) {
       context.commit('setConnected', false);
+      context.commit('setConnectedProvidersCount', null);
     },
     resetErrors (context) {
       context.commit('setAPIConnectionError', false);
