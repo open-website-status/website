@@ -1,5 +1,5 @@
 import _Vue from 'vue';
-import { OpenWebsiteStatusAPI } from '@open-website-status/api';
+import { OpenWebsiteStatusAPI, Query, WebsiteQueryMessage } from '@open-website-status/api';
 import store from '../../store';
 
 export class WebsiteAPI {
@@ -34,6 +34,10 @@ export class WebsiteAPI {
     await store.dispatch('disconnect');
     await store.dispatch('resetErrors');
     this.api.reconnect();
+  }
+
+  public query (data: WebsiteQueryMessage): Promise<Query> {
+    return this.api.queryWebsite(data);
   }
 }
 

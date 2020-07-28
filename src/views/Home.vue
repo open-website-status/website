@@ -54,6 +54,15 @@
       >
         Sorry, there was an error with reCAPTCHA
       </v-alert>
+      <v-alert
+        class="mt-7"
+        color="error"
+        icon="mdi-alert-circle"
+        :value="error !== null"
+        transition="slide-x-transition"
+      >
+        {{ error }}
+      </v-alert>
       <template v-if="$typedStore.state.connectedProvidersCount !== null">
         <v-alert
           v-if="$typedStore.state.connectedProvidersCount === 0"
@@ -153,15 +162,31 @@
 
     async checkWebsite (): Promise<void> {
       const url = new URL(this.url.trim());
-      console.log(url);
 
       if (this.recaptchaResponse === null) {
         console.error('No captcha response');
+        this.captchaError = true;
         this.loading = false;
         return;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      const data = {
+        reCaptchaResponse: this.recaptchaResponse,
+        subscribe: true,
+        protocol: url.protocol,
+        hostname: url.hostname,
+        port: url.port === '' ? undefined : parseInt(url.port),
+        pathname: url.pathname,
+        search: url.search,
+      };
+
+      try {
+        const query = await this.$api.query(data);
+        await this.$router.push(`/query-details/${query.id}`);
+      } catch (error) {
+        console.error(error);
+        this.error = error.message;
+      }
 
       this.loading = false;
     }
@@ -193,6 +218,8 @@
     recaptchaResponse: null | string = null;
 
     captchaError = false;
+
+    error: null | string = null;
 
     shakeNoProviders = false;
 
