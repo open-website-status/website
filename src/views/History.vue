@@ -1,7 +1,8 @@
 <template>
   <v-main>
+    <not-connected-container v-if="!$typedStore.state.connected" />
     <v-container
-      v-if="urlError !== null"
+      v-else-if="urlError !== null"
       class="history-container history-container--error
         fill-height d-flex flex-column
         align-center justify-center text-center"
@@ -201,6 +202,7 @@
   import JobStateCard from '@/components/JobStateCard.vue';
   import JobResultsCard from '@/components/JobResultsCard.vue';
   import ExecutionTimeCard from '@/components/ExecutionTimeCard.vue';
+  import NotConnectedContainer from '@/components/NotConnectedContainer.vue';
 
   @Component({
     components: {
@@ -210,6 +212,7 @@
       ExecutionTimeCard,
       PieChart,
       InteractiveUrlElement,
+      NotConnectedContainer,
     },
   })
   export default class History extends Vue {

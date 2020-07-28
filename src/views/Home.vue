@@ -1,6 +1,10 @@
 <template>
   <v-main>
-    <v-container class="fill-height flex-column justify-center align-stretch home-container">
+    <not-connected-container v-if="!$typedStore.state.connected" />
+    <v-container
+      v-else
+      class="fill-height flex-column justify-center align-stretch home-container"
+    >
       <h1 class="mb-6 text-h5 text-sm-h3">
         Check website status...
       </h1>
@@ -106,9 +110,13 @@
   import { Component, Vue } from 'vue-property-decorator';
   import VueRecaptcha from 'vue-recaptcha';
   import _ from 'lodash';
+  import NotConnectedContainer from '@/components/NotConnectedContainer.vue';
 
   @Component({
-    components: { VueRecaptcha },
+    components: {
+      NotConnectedContainer,
+      VueRecaptcha,
+    },
   })
   export default class Home extends Vue {
     $refs!: {

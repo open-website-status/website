@@ -1,7 +1,8 @@
 <template>
   <v-main>
+    <not-connected-container v-if="!$typedStore.state.connected" />
     <v-container
-      v-if="error !== null"
+      v-else-if="error !== null"
       class="query-details-container query-details-container--error
         fill-height d-flex flex-column
         align-center justify-center text-center"
@@ -179,6 +180,7 @@
   import _ from 'lodash';
   import InteractiveUrlElement from '@/components/InteractiveUrlElement.vue';
   import QueryDetailsJobItem from '@/components/QueryDetailsJobItem.vue';
+  import NotConnectedContainer from '@/components/NotConnectedContainer.vue';
 
   @Component({
     components: {
@@ -187,6 +189,7 @@
       ExecutionTimeCard,
       InteractiveUrlElement,
       QueryDetailsJobItem,
+      NotConnectedContainer,
     },
   })
   export default class QueryDetails extends Vue {
