@@ -143,42 +143,48 @@
         </h1>
         <!-- TODO: Add transitions -->
         <v-list subheader>
-          <v-subheader>Completed</v-subheader>
-          <div
-            v-if="completedJobs.length === 0"
-            class="text-center mx-3 my-2 text--secondary text-body-2"
-          >
-            No completed jobs
+          <div>
+            <v-subheader>Completed</v-subheader>
+            <div
+              v-if="completedJobs.length === 0"
+              class="text-center mx-3 my-2 text--secondary text-body-2"
+            >
+              No completed jobs
+            </div>
+            <query-details-job-item
+              v-for="job in completedJobs"
+              :key="job.id"
+              :job="job"
+            />
           </div>
-          <query-details-job-item
-            v-for="job in completedJobs"
-            :key="job.id"
-            :job="job"
-          />
-          <v-subheader>In progress</v-subheader>
-          <div
-            v-if="jobsInProgress.length === 0"
-            class="text-center mx-3 my-2 text--secondary text-body-2"
-          >
-            No jobs in progress
+          <div>
+            <v-subheader>In progress</v-subheader>
+            <div
+              v-if="jobsInProgress.length === 0"
+              class="text-center mx-3 my-2 text--secondary text-body-2"
+            >
+              No jobs in progress
+            </div>
+            <query-details-job-item
+              v-for="job in jobsInProgress"
+              :key="job.id"
+              :job="job"
+            />
           </div>
-          <query-details-job-item
-            v-for="job in jobsInProgress"
-            :key="job.id"
-            :job="job"
-          />
-          <v-subheader>Canceled or rejected</v-subheader>
-          <div
-            v-if="canceledOrRejectedJobs.length === 0"
-            class="text-center mx-3 mt-2 mb-4 text--secondary text-body-2"
-          >
-            No canceled or rejected jobs
+          <div>
+            <v-subheader>Canceled or rejected</v-subheader>
+            <div
+              v-if="canceledOrRejectedJobs.length === 0"
+              class="text-center mx-3 mt-2 mb-4 text--secondary text-body-2"
+            >
+              No canceled or rejected jobs
+            </div>
+            <query-details-job-item
+              v-for="job in canceledOrRejectedJobs"
+              :key="job.id"
+              :job="job"
+            />
           </div>
-          <query-details-job-item
-            v-for="job in canceledOrRejectedJobs"
-            :key="job.id"
-            :job="job"
-          />
         </v-list>
       </template>
     </v-container>

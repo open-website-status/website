@@ -1,11 +1,16 @@
 import _Vue from 'vue';
-import { OpenWebsiteStatusAPI, Query, WebsiteQueryMessage } from '@open-website-status/api';
+import { Job, OpenWebsiteStatusAPI, Query, WebsiteQueryMessage } from '@open-website-status/api';
 import store from '../../store';
+import _ from 'lodash';
+
+export type OnJobListThrottledFunction = ((queryId: string, jobs: Job[]) => void) & _.Cancelable;
 
 export class WebsiteAPI {
   private api = new OpenWebsiteStatusAPI({
     server: process.env.VUE_APP_SERVER_URL,
   });
+
+  private onJobListThrottled = new Map<string, OnJobListThrottledFunction>();
 
   constructor () {
     this.api.onConnect(async () => {
@@ -29,11 +34,25 @@ export class WebsiteAPI {
       store.commit('setConnectedProvidersCount', count);
     });
 
-    this.api.onJobList((queryId, jobs) => {
-      store.commit('setJobs', {
-        queryId,
-        jobs,
+    this.api.onJobList((queryId, jobs) => this.throttleOnJobList(queryId, jobs));
+  }
+
+  private throttleOnJobList (queryId: string, jobs: Job[]) {
+    let throttle = this.onJobListThrottled.get(queryId);
+    if (throttle === undefined) {
+      throttle = _.throttle(WebsiteAPI.onJobList, 500, {
+        leading: true,
+        trailing: true,
       });
+      this.onJobListThrottled.set(queryId, throttle);
+    }
+    throttle(queryId, jobs);
+  }
+
+  private static onJobList (queryId: string, jobs: Job[]) {
+    store.commit('setJobs', {
+      queryId,
+      jobs,
     });
   }
 

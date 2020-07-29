@@ -2,8 +2,8 @@ import {
   CompletedJob,
   JobResultError,
   JobResultSuccess,
-  JobResultTimeout
-} from "@open-website-status/api";
+  JobResultTimeout,
+} from '@open-website-status/api';
 
 export interface PieChartData {
   data: number;
@@ -36,4 +36,3 @@ export interface CompletedJobError extends CompletedJob {
 export interface CompletedJobTimeout extends CompletedJob {
   result: JobResultTimeout;
 }
-
