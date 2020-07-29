@@ -69,6 +69,9 @@
             yAxes: [
               {
                 type: 'linear',
+                ticks: {
+                  beginAtZero: true,
+                },
               },
             ],
           },
