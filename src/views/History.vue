@@ -259,7 +259,12 @@
 
     get queryItems () {
       if (this.queriesWithJobs === null) return null;
-      return this.queriesWithJobs.map((query: QueryWithJobs) => {
+      const sortedQueriesWithJobs = _.orderBy(
+        this.queriesWithJobs,
+        [(e) => new Date(e.timestamp).getTime()],
+        ['desc'],
+      );
+      return sortedQueriesWithJobs.map((query: QueryWithJobs) => {
         const jobStateCounts = _.countBy(query.jobs, 'jobState');
         const jobResults = _.groupBy(
           query.jobs.filter((job) => job.jobState === 'completed') as CompletedJob[],
