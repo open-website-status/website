@@ -73,21 +73,24 @@
           {{ query.search }}
         </interactive-url-element>
       </div>
-      <div class="d-flex justify-end mt-6 mb-4 mx-2">
+      <div class="d-flex justify-end mt-4 mb-2 mx-2 flex-wrap">
         <v-btn
           rounded
           outlined
-          :large="$vuetify.breakpoint.smAndUp"
-          class="mr-3"
+          class="my-2"
           :to="historyRoute"
+          :small="$vuetify.breakpoint.xsOnly"
+          :large="$vuetify.breakpoint.smAndUp"
         >
           View history
         </v-btn>
         <v-btn
           rounded
           color="primary"
-          :large="$vuetify.breakpoint.smAndUp"
+          class="ml-3 my-2"
           :to="retryRoute"
+          :small="$vuetify.breakpoint.xsOnly"
+          :large="$vuetify.breakpoint.smAndUp"
         >
           Retry
         </v-btn>

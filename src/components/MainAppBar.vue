@@ -13,10 +13,11 @@
         <v-img
           :src="require('../assets/logo.svg')"
           contain
-          class="mr-4"
           width="32"
         />
-        Open Website Status
+        <div class="ml-4 hidden-xs-only">
+          Open Website Status
+        </div>
       </v-toolbar-title>
     </router-link>
     <v-spacer />

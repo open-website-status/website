@@ -151,124 +151,126 @@
           <v-card-subtitle v-text="jobStateString" />
         </div>
       </div>
-      <v-expand-transition>
-        <div v-if="job.jobState === 'completed'">
-          <v-divider />
-          <div class="py-4 px-5">
-            <div class="text-overline text--secondary">
-              Result
-            </div>
-            <template v-if="job.result.state === 'error'">
-              <div class="body-2 red--text font-weight-medium">
-                Error
+      <v-divider />
+      <div class="overflow-y-auto">
+        <v-expand-transition>
+          <div v-if="job.jobState === 'completed'">
+            <div class="py-4 px-5">
+              <div class="text-overline text--secondary">
+                Result
               </div>
-              <div class="text-overline mt-3 text--secondary">
-                Error code
+              <template v-if="job.result.state === 'error'">
+                <div class="body-2 red--text font-weight-medium">
+                  Error
+                </div>
+                <div class="text-overline mt-3 text--secondary">
+                  Error code
+                </div>
+                <div
+                  class="body-2"
+                  v-text="job.result.errorCode"
+                />
+              </template>
+              <div
+                v-else-if="job.result.state === 'success'"
+                class="body-2 text--primary"
+              >
+                Success
               </div>
               <div
-                class="body-2"
-                v-text="job.result.errorCode"
+                v-else-if="job.result.state === 'timeout'"
+                class="body-2 amber--text"
+              >
+                Timeout
+              </div>
+              <template v-if="executionTimeString !== undefined">
+                <div class="text-overline mt-3 text--secondary">
+                  Execution time
+                </div>
+                <div class="body-2 text--primary">
+                  {{ executionTimeString }} seconds
+                </div>
+              </template>
+              <template v-if="httpStatusDetails !== undefined">
+                <div class="text-overline mt-3 text--secondary">
+                  HTTP status code
+                </div>
+                <div :class="`body-2 ${httpStatusDetails.textColor}`">
+                  {{ httpStatusDetails.code }} - {{ httpStatusDetails.httpText }}
+                </div>
+              </template>
+            </div>
+            <v-divider />
+          </div>
+        </v-expand-transition>
+        <div class="py-4 px-5">
+          <div class="text-overline text--secondary">
+            Dispatch time
+          </div>
+          <div
+            class="body-2 text--primary"
+            v-text="dispatchTimeString"
+          />
+          <v-expand-transition>
+            <div v-if="acceptTimeString !== undefined">
+              <div class="text-overline mt-3 text--secondary">
+                Accept time
+              </div>
+              <div
+                class="body-2 text--primary"
+                v-text="acceptTimeString"
               />
-            </template>
-            <div
-              v-else-if="job.result.state === 'success'"
-              class="body-2 text--primary"
-            >
-              Success
             </div>
-            <div
-              v-else-if="job.result.state === 'timeout'"
-              class="body-2 amber--text"
-            >
-              Timeout
-            </div>
-            <template v-if="executionTimeString !== undefined">
+          </v-expand-transition>
+          <v-expand-transition>
+            <div v-if="rejectTimeString !== undefined">
               <div class="text-overline mt-3 text--secondary">
-                Execution time
+                Reject time
               </div>
-              <div class="body-2 text--primary">
-                {{ executionTimeString }} seconds
-              </div>
-            </template>
-            <template v-if="httpStatusDetails !== undefined">
+              <div
+                class="body-2 text--primary"
+                v-text="rejectTimeString"
+              />
+            </div>
+          </v-expand-transition>
+          <v-expand-transition>
+            <div v-if="completeTimeString !== undefined">
               <div class="text-overline mt-3 text--secondary">
-                HTTP status code
+                Complete time
               </div>
-              <div :class="`body-2 ${httpStatusDetails.textColor}`">
-                {{ httpStatusDetails.code }} - {{ httpStatusDetails.httpText }}
-              </div>
-            </template>
-          </div>
-        </div>
-      </v-expand-transition>
-      <v-divider />
-      <div class="py-4 px-5 overflow-y-auto">
-        <div class="text-overline text--secondary">
-          Dispatch time
-        </div>
-        <div
-          class="body-2 text--primary"
-          v-text="dispatchTimeString"
-        />
-        <v-expand-transition>
-          <div v-if="acceptTimeString !== undefined">
-            <div class="text-overline mt-3 text--secondary">
-              Accept time
+              <div
+                class="body-2 text--primary"
+                v-text="completeTimeString"
+              />
             </div>
-            <div
-              class="body-2 text--primary"
-              v-text="acceptTimeString"
-            />
+          </v-expand-transition>
+          <div class="text-overline mt-3 text--secondary">
+            Location
           </div>
-        </v-expand-transition>
-        <v-expand-transition>
-          <div v-if="rejectTimeString !== undefined">
-            <div class="text-overline mt-3 text--secondary">
-              Reject time
+          <div class="body-2 text--primary d-flex align-center">
+            <div class="mr-4">
+              <v-img
+                :src="subdivisionInfo.flagSrc"
+                width="24px"
+              />
             </div>
-            <div
-              class="body-2 text--primary"
-              v-text="rejectTimeString"
-            />
+            <div v-text="subdivisionInfo.displayCountryAndRegionName" />
           </div>
-        </v-expand-transition>
-        <v-expand-transition>
-          <div v-if="completeTimeString !== undefined">
-            <div class="text-overline mt-3 text--secondary">
-              Complete time
-            </div>
-            <div
-              class="body-2 text--primary"
-              v-text="completeTimeString"
-            />
+          <div class="text-overline mt-3 text--secondary">
+            Internet Service Provider
           </div>
-        </v-expand-transition>
-        <div class="text-overline mt-3 text--secondary">
-          Location
-        </div>
-        <div class="body-2 text--primary d-flex align-center">
-          <div class="mr-4">
-            <v-img
-              :src="subdivisionInfo.flagSrc"
-              width="24px"
-            />
+          <div
+            class="body-2 text--primary"
+            v-text="job.ispName"
+          />
+          <div class="text-overline mt-3 text--secondary">
+            Job ID
           </div>
-          <div v-text="subdivisionInfo.displayCountryAndRegionName" />
+          <div
+            class="body-2 text--primary"
+            v-text="job.id"
+          />
         </div>
-        <div class="text-overline mt-3 text--secondary">
-          Internet Service Provider
-        </div>
-        <div
-          class="body-2 text--primary"
-          v-text="job.ispName"
-        />
-        <div class="text-overline mt-3 text--secondary">
-          Job ID
-        </div>
-        <div
-          class="body-2 text--primary"
-          v-text="job.id"
-        />
       </div>
     </v-card>
   </v-bottom-sheet>

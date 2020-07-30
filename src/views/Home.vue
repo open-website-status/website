@@ -22,31 +22,34 @@
           :error-messages="urlErrors"
           type="url"
         />
-        <div class="d-flex justify-end">
+        <div class="d-flex justify-end flex-wrap">
           <v-btn
             rounded
-            :large="$vuetify.breakpoint.smAndUp"
             outlined
             type="submit"
             :disabled="!submitEnabled"
-            class="mr-3"
             :to="historyRoute"
+            class="mb-2"
+            :large="$vuetify.breakpoint.smAndUp"
+            :small="$vuetify.breakpoint.xsOnly"
           >
             View history
           </v-btn>
           <v-btn
             rounded
-            :large="$vuetify.breakpoint.smAndUp"
             color="primary"
             type="submit"
             :disabled="!submitEnabled"
+            class="ml-3 mb-2"
+            :large="$vuetify.breakpoint.smAndUp"
+            :small="$vuetify.breakpoint.xsOnly"
           >
             Check
           </v-btn>
         </div>
       </v-form>
       <v-alert
-        class="mt-7"
+        class="mt-4"
         color="error"
         icon="mdi-alert-circle"
         :value="captchaError"
