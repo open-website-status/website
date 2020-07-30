@@ -185,7 +185,7 @@
                 <v-btn
                   rounded
                   outlined
-                  color="primary"
+                  color="secondary"
                   :to="`/query-details/${query.id}`"
                 >
                   View details

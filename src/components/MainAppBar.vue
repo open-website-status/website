@@ -3,14 +3,22 @@
     app
     class="app-bar"
   >
-    <v-btn
-      v-if="$route.name !== 'Home'"
-      icon
+    <router-link
+      v-ripple
       to="/"
+      class="title-link"
+      exact
     >
-      <v-icon>mdi-arrow-left</v-icon>
-    </v-btn>
-    <v-toolbar-title>Open Website Status</v-toolbar-title>
+      <v-toolbar-title class="d-flex align-center">
+        <v-img
+          :src="require('../assets/logo.svg')"
+          contain
+          class="mr-4"
+          width="32"
+        />
+        Open Website Status
+      </v-toolbar-title>
+    </router-link>
     <v-spacer />
     <v-btn
       v-if="$vuetify.breakpoint.smAndUp"
@@ -42,3 +50,16 @@
     }
   }
 </script>
+
+<style lang="scss">
+  .app-bar {
+    .title-link {
+      text-decoration: inherit;
+      color: inherit;
+      margin-left: -6px;
+      margin-right: -6px;
+      padding: 6px;
+      border-radius: 3px;
+    }
+  }
+</style>
