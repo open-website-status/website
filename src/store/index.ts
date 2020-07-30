@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex, { Store } from 'vuex';
-import { Job } from '@open-website-status/api';
+import { Job, Query } from '@open-website-status/api';
 
 Vue.use(Vuex);
 
@@ -16,11 +16,17 @@ export interface State {
   apiError: string | null;
   connectedProvidersCount: number | null;
   jobs: Record<string, Job[] | undefined>;
+  hostnameQueries: Record<string, Query[] | undefined>;
 }
 
 export interface SetJobsOptions {
   queryId: string;
   jobs: Job[];
+}
+
+export interface SetHostnameQueriesOptions {
+  hostname: string;
+  queries: Query[];
 }
 
 export default new Vuex.Store<State>({
@@ -30,6 +36,7 @@ export default new Vuex.Store<State>({
     apiError: null,
     connectedProvidersCount: null,
     jobs: {},
+    hostnameQueries: {},
   },
   mutations: {
     setConnected (state, connected: boolean): void {
@@ -47,6 +54,23 @@ export default new Vuex.Store<State>({
     setJobs (state, { queryId, jobs }: SetJobsOptions) {
       Vue.set(state.jobs, queryId, jobs);
     },
+    resetJobs (state) {
+      state.jobs = {};
+    },
+    setHostnameQueries (state, { hostname, queries }: SetHostnameQueriesOptions) {
+      Vue.set(state.hostnameQueries, hostname, queries);
+    },
+    addHostnameQuery (state, query: Query) {
+      const hostnameQueries = state.hostnameQueries[query.hostname];
+      if (hostnameQueries === undefined) {
+        Vue.set(state.jobs, query.id, [query]);
+      } else {
+        hostnameQueries.push(query);
+      }
+    },
+    resetHostnameQueries (state) {
+      state.hostnameQueries = {};
+    },
   },
   actions: {
     connect (context) {
@@ -57,6 +81,8 @@ export default new Vuex.Store<State>({
     disconnect (context) {
       context.commit('setConnected', false);
       context.commit('setConnectedProvidersCount', null);
+      context.commit('resetJobs');
+      context.commit('resetHostnameQueries');
     },
     resetErrors (context) {
       context.commit('setAPIConnectionError', false);

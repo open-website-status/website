@@ -58,7 +58,7 @@
           {{ query.hostname }}
         </interactive-url-element>
         <interactive-url-element
-          v-if="query.port"
+          v-if="query.port !== null"
           label="Port"
         >
           :{{ query.port }}
@@ -225,7 +225,7 @@
     error: {
       title: string;
       message: string | null;
-    } | null = null
+    } | null = null;
 
     query: Query | null = null;
 

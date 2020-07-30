@@ -22,6 +22,38 @@
       />
     </v-container>
     <v-container
+      v-else-if="error !== null"
+      class="query-details-container query-details-container--error
+        fill-height d-flex flex-column
+        align-center justify-center text-center"
+    >
+      <v-icon
+        size="96"
+        color="error"
+      >
+        mdi-alert-circle
+      </v-icon>
+      <h4
+        class="text-h4 mt-8"
+        v-text="error.title"
+      />
+      <h5
+        v-if="error.message !== null"
+        class="text-h5 mt-4"
+        v-text="error.message"
+      />
+    </v-container>
+    <v-container
+      v-else-if="queryItems === null"
+      class="fill-height align-center justify-center"
+    >
+      <v-progress-circular
+        indeterminate
+        :size="96"
+        color="primary"
+      />
+    </v-container>
+    <v-container
       v-else-if="url !== null"
       class="history-container"
     >
@@ -33,7 +65,7 @@
           {{ url.hostname }}
         </interactive-url-element>
         <interactive-url-element
-          v-if="url.port !== undefined"
+          v-if="url.port !== null"
           label="Port"
         >
           :{{ url.port }}
@@ -75,14 +107,14 @@
                   {{ query.hostname }}
                 </interactive-url-element>
                 <interactive-url-element
-                  v-if="query.port !== undefined"
+                  v-if="query.port !== null"
                   label="Port"
                   :different="url.port !== query.port"
                 >
                   :{{ query.port }}
                 </interactive-url-element>
                 <interactive-url-element
-                  v-else-if="url.port !== undefined"
+                  v-else-if="url.port !== null"
                   label="Default port"
                   different
                 >
@@ -112,12 +144,6 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div class="mx-8 mt-8 mb-4">
-              <v-progress-linear
-                indeterminate
-                color="primary"
-              />
-            </div>
             <div>
               <v-row>
                 <v-col
@@ -173,16 +199,6 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </v-container>
-    <v-overlay
-      absolute
-      :value="false"
-    >
-      <v-progress-circular
-        indeterminate
-        :size="96"
-        color="primary"
-      />
-    </v-overlay>
   </v-main>
 </template>
 
@@ -192,9 +208,10 @@
   import PieChart from '@/components/PieChart.vue';
   import { colors } from 'vuetify/lib';
   import {
-    CompletedHistoryJob,
-    HistoryQuery,
+    CompletedJobError,
+    CompletedJobSuccess,
     QueryURL,
+    QueryWithJobs,
   } from '@/types';
   import _ from 'lodash';
   import ExecutionTimeChart from '@/components/ExecutionTimeChart.vue';
@@ -202,7 +219,7 @@
   import JobResultsCard from '@/components/JobResultsCard.vue';
   import ExecutionTimeCard from '@/components/ExecutionTimeCard.vue';
   import NotConnectedContainer from '@/components/NotConnectedContainer.vue';
-  import { JobResultError, JobResultSuccess } from '@open-website-status/api';
+  import { CompletedJob, Job, JobResultSuccess, Query } from '@open-website-status/api';
 
   @Component({
     components: {
@@ -220,119 +237,37 @@
 
     urlError: string | null = null;
 
-    queries: HistoryQuery[] = [
-      {
-        id: '123456',
-        protocol: 'http:',
-        hostname: 'www.google.com',
-        port: undefined,
-        pathname: '/path',
-        search: '',
-        timestamp: new Date(),
-        jobs: [
-          {
-            jobState: 'dispatched',
-            id: 'abcdef',
-            queryId: '123456',
-          },
-          {
-            jobState: 'accepted',
-            id: 'abcdef',
-            queryId: '123456',
-          },
-          {
-            jobState: 'completed',
-            id: 'asdfghjkl',
-            queryId: '123456',
-            result: {
-              state: 'success',
-              executionTime: 2000,
-              httpCode: 200,
-            },
-          },
-          {
-            jobState: 'dispatched',
-            id: 'qwerty',
-            queryId: '123456',
-          },
-          {
-            jobState: 'completed',
-            id: 'zxcvb',
-            queryId: '123456',
-            result: {
-              state: 'timeout',
-              executionTime: 30015,
-            },
-          },
-          {
-            jobState: 'completed',
-            id: 'mnbv',
-            queryId: '123456',
-            result: {
-              state: 'error',
-              errorCode: 'ERROR_CODE',
-            },
-          },
-          {
-            jobState: 'completed',
-            id: 'mnbv',
-            queryId: '123456',
-            result: {
-              state: 'success',
-              executionTime: 5219,
-              httpCode: 404,
-            },
-          },
-          {
-            jobState: 'completed',
-            id: 'jjsajfj',
-            queryId: '123456',
-            result: {
-              state: 'success',
-              executionTime: 17093,
-              httpCode: 502,
-            },
-          },
-        ],
-      },
-      {
-        id: '098765',
-        protocol: 'https:',
-        hostname: 'www.google.com',
-        port: 5000,
-        pathname: '/',
-        search: '?hello=15',
-        timestamp: new Date(),
-        jobs: [],
-      },
-      {
-        id: '465653255',
-        protocol: 'https:',
-        hostname: 'google.com',
-        port: 300,
-        pathname: '/',
-        search: '',
-        timestamp: new Date(),
-        jobs: [
-          {
-            jobState: 'dispatched',
-            id: 'ojkhsfajohsgfa',
-            queryId: '465653255',
-          },
-        ],
-      },
-    ];
+    error: {
+      title: string;
+      message: string | null;
+    } | null = null;
+
+    get queriesWithJobs (): QueryWithJobs[] | null {
+      if (this.hostname === null) return null;
+      const queries: Query[] | undefined = this.$typedStore.state.hostnameQueries[this.hostname];
+      if (queries === undefined) return null;
+      const queriesWithJobsOrNull = queries.map((query): QueryWithJobs | null => {
+        const jobs: Job[] | undefined = this.$typedStore.state.jobs[query.id];
+        if (jobs === undefined) return null;
+        return {
+          ...query,
+          jobs,
+        };
+      });
+      return queriesWithJobsOrNull.filter((e) => e !== null) as QueryWithJobs[];
+    }
 
     get queryItems () {
-      return this.queries.map((query) => {
+      if (this.queriesWithJobs === null) return null;
+      return this.queriesWithJobs.map((query: QueryWithJobs) => {
         const jobStateCounts = _.countBy(query.jobs, 'jobState');
         const jobResults = _.groupBy(
-          query.jobs.filter((job) => job.jobState === 'completed') as CompletedHistoryJob[],
+          query.jobs.filter((job) => job.jobState === 'completed') as CompletedJob[],
           'result.state',
         );
         return ({
           id: query.id,
-          dateString: query.timestamp.toLocaleString(undefined, {
+          dateString: new Date(query.timestamp).toLocaleString(undefined, {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
@@ -380,13 +315,13 @@
           timeoutCount: jobResults.timeout?.length ?? 0,
           errorCounts: jobResults.error === undefined ? [] : _.toPairs(
             _.countBy(
-              jobResults.error as CompletedHistoryJob<JobResultError>[],
+              jobResults.error as CompletedJobError[],
               (job) => job.result.errorCode,
             ),
           ).map(([code, count]) => ({ code, count })),
           httpCodeCounts: jobResults.success === undefined ? [] : _.toPairs(
             _.countBy(
-              jobResults.success as CompletedHistoryJob<JobResultSuccess>[],
+              jobResults.success as CompletedJobSuccess[],
               (job) => job.result.httpCode,
             )).map(([code, count]) => ({
             code: parseInt(code, 10),
@@ -420,13 +355,33 @@
         this.url = {
           protocol: url.protocol,
           hostname: url.hostname,
-          port: url.port === '' ? undefined : parseInt(url.port, 10),
+          port: url.port === '' ? null : parseInt(url.port, 10),
           pathname: url.pathname,
           search: url.search,
         };
       } catch (error) {
         this.url = null;
         this.urlError = 'Failed to parse URL';
+      }
+    }
+
+    get hostname () {
+      if (!this.$typedStore.state.connected) return null;
+      return this.url?.hostname ?? null;
+    }
+
+    @Watch('hostname', {
+      immediate: true,
+    })
+    async onHostnameChanged (value: string | null) {
+      if (value === null) return;
+      try {
+        await this.$api.getHostnameQueries(value, true);
+      } catch (error) {
+        this.error = {
+          title: 'Failed to get history',
+          message: error instanceof Error ? error.message : null,
+        };
       }
     }
   }

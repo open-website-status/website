@@ -35,6 +35,10 @@ export class WebsiteAPI {
     });
 
     this.api.onJobList((queryId, jobs) => this.throttleOnJobList(queryId, jobs));
+
+    this.api.onQueryCreate((query) => {
+      store.commit('addHostnameQuery', query);
+    });
   }
 
   private throttleOnJobList (queryId: string, jobs: Job[]) {
@@ -71,6 +75,18 @@ export class WebsiteAPI {
       queryId: id,
       subscribe,
     });
+  }
+
+  public async getHostnameQueries (hostname: string, subscribe: boolean): Promise<Query[]> {
+    const queries = await this.api.getHostnameQueries({
+      hostname,
+      subscribe,
+    });
+    store.commit('setHostnameQueries', {
+      hostname,
+      queries,
+    });
+    return queries;
   }
 }
 

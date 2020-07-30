@@ -1,8 +1,8 @@
 import {
-  CompletedJob,
+  CompletedJob, Job,
   JobResultError,
   JobResultSuccess,
-  JobResultTimeout,
+  JobResultTimeout, Query,
 } from '@open-website-status/api';
 
 export interface PieChartData {
@@ -19,11 +19,9 @@ export interface QueryURL {
   protocol: 'http:' | 'https:';
   hostname: string;
   pathname: string;
-  port: number | undefined;
+  port: number | null;
   search: string;
 }
-
-export * from './history';
 
 export interface CompletedJobSuccess extends CompletedJob {
   result: JobResultSuccess;
@@ -35,4 +33,8 @@ export interface CompletedJobError extends CompletedJob {
 
 export interface CompletedJobTimeout extends CompletedJob {
   result: JobResultTimeout;
+}
+
+export interface QueryWithJobs extends Query {
+  jobs: Job[];
 }
