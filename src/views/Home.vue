@@ -182,7 +182,7 @@
         subscribe: false,
         protocol: url.protocol,
         hostname: url.hostname,
-        port: url.port === '' ? undefined : parseInt(url.port),
+        port: url.port === '' ? null : parseInt(url.port),
         pathname: url.pathname,
         search: url.search,
       };
